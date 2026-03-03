@@ -21,10 +21,7 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           <Link to="/browse" className="hover:text-purple-600">
             {t.navbar.browse}
-          </Link>
-          <Link to="/products" className="hover:text-purple-600">
-            {t.navbar.products}
-          </Link>
+          </Link> 
 
           <Link
             to="/cart"

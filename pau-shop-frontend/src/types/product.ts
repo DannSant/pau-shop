@@ -8,4 +8,11 @@ export interface Product {
   category: string;
   franchise: string;
   created_at?: string;
+  product_images: ProductImage[];
+}
+
+export interface ProductImage {
+  id: string;
+  url: string;
+  is_thumbnail: boolean;
 }

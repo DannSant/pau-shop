@@ -4,7 +4,14 @@ import { CreateProductDTO, UpdateProductDTO } from "./products.types";
 export async function getAllProducts() {
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select(`
+    *,
+    product_images (
+      id,
+      url,
+      is_thumbnail
+    )
+   `)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

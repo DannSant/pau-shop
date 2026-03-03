@@ -16,5 +16,16 @@ export const es = {
   cart: {
     empty: "Tu carrito está vacío",
     checkout: "Proceder al pago"
+  },
+  browswe: {
+    categories: "Categorías",
+    all: "Todas",
+    noProducts: "No hay productos.",
+    products: "Productos"
+  },
+  common: {
+    price: "Precio",
+    offerPrice: "Precio con oferta",
+    noImage: "Sin imagen"
   }
 };
