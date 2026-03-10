@@ -2,6 +2,7 @@ import AppRouter from "./routes/AppRouter";
 import { useAppDispatch } from "./hooks/useAppDispatch";
 import { fetchProducts } from "./features/products/productsSlice";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -9,5 +10,10 @@ export default function App() {
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
-  return <AppRouter />;
+  return (
+    <>
+      <AppRouter />
+      <Toaster position="top-right" />
+    </>
+  );
 }

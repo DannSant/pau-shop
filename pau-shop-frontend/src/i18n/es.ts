@@ -1,3 +1,5 @@
+import { addToCart } from "../features/cart/cartSlice";
+
 export const es = {
   navbar: {
     home: "Inicio",
@@ -14,8 +16,13 @@ export const es = {
     featured: "Productos Destacados"
   },
   cart: {
+    yourCart: "Tu Carrito",
     empty: "Tu carrito está vacío",
-    checkout: "Proceder al pago"
+    checkout: "Proceder al pago",
+    total: "Total",
+    remove: "Eliminar",
+    quantity: "Cantidad",
+    browse: "Explorar Productos"
   },
   browswe: {
     categories: "Categorías",
@@ -27,5 +34,12 @@ export const es = {
     price: "Precio",
     offerPrice: "Precio con oferta",
     noImage: "Sin imagen"
+  },
+  product: {
+    addToCart: "Agregar al carrito",
+    outOfStock: "Agotado",
+    inStock: "Disponibles",
+    similarProducts: "Productos similares",
+    checkout: "Proceder al pago"
   }
 };

@@ -8,6 +8,12 @@ export default function Navbar() {
   const user = useAppSelector((state) => state.auth.user);
   const cartItems = useAppSelector((state) => state.cart.items);
 
+  const getItemCount = () => {
+    const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    console.log(totalCount)
+    return totalCount;
+  }
+
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -31,7 +37,7 @@ export default function Navbar() {
 
             {cartItems.length > 0 && (
               <span className="absolute -top-2 -right-3 bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full">
-                {cartItems.length}
+                {getItemCount()}
               </span>
             )}
           </Link>

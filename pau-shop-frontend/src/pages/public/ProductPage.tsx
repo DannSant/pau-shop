@@ -2,16 +2,23 @@ import { useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import ProductCard from "../../components/product/ProductCard";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { addToCart } from "../../features/cart/cartSlice";
+import { t } from "../../i18n";
+import toast from "react-hot-toast";
 
 export default function ProductPage() {
   const { id } = useParams();
+  const dispatch = useAppDispatch();
   const products = useAppSelector((state) => state.products.items);
   const cartItems = useAppSelector((state) => state.cart.items);
-   const loading = useAppSelector((state) => state.products.loading);
+  const loading = useAppSelector((state) => state.products.loading);
 
   const product = products.find((p) => p.id === id);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+
 
   const similarProducts = useMemo(() => {
     if (!product) return [];
@@ -24,6 +31,14 @@ export default function ProductPage() {
 
   if (!product) return <div className="p-10">Producto no encontrado</div>;
 
+  const cartItem = cartItems.find(
+    (item) => item.product_id === product.id
+  );
+
+  const quantityInCart = cartItem?.quantity || 0;
+
+  const remainingStock = product.stock - quantityInCart;
+
   const images = product.product_images;
   const thumbnail =
     images.find((img) => img.is_thumbnail)?.url ||
@@ -31,14 +46,26 @@ export default function ProductPage() {
 
   const currentImage = selectedImage || thumbnail;
 
-  
+  const handleAddToCart = () => {
+     if (remainingStock <= 0) return;
+
+    dispatch(
+      addToCart({
+        product_id: product.id,
+        name: product.name,
+        price: product.offer_price ?? product.price,
+        quantity: 1,
+      })
+    );
+    toast.success(`${product.name} added to cart`);
+  };
 
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       {/* Top Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[100px_1fr_420px] gap-10">
         {/* LEFT - Thumbnails */}
         <div className="flex lg:flex-col gap-4 order-2 lg:order-1">
           {images.map((img) => (
@@ -47,11 +74,10 @@ export default function ProductPage() {
               src={img.url}
               alt={product.name}
               onClick={() => setSelectedImage(img.url)}
-              className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${
-                currentImage === img.url
-                  ? "border-purple-600"
-                  : "border-transparent"
-              }`}
+              className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${currentImage === img.url
+                ? "border-purple-600"
+                : "border-transparent"
+                }`}
             />
           ))}
         </div>
@@ -66,7 +92,7 @@ export default function ProductPage() {
         </div>
 
         {/* RIGHT - Details */}
-        <div className="order-3">
+        <div className="order-3 bg-white rounded-2xl shadow-lg p-8 h-fit">
           <h1 className="text-3xl font-bold mb-4">
             {product.name}
           </h1>
@@ -93,14 +119,32 @@ export default function ProductPage() {
           </div>
 
           <div className="flex gap-4 mb-6">
-            <button className="bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition">
-              Add to Cart
+            <button
+              onClick={handleAddToCart}
+              disabled={remainingStock <= 0}
+              className={`cursor-pointer px-6 py-3 rounded-xl transition text-white ${ remainingStock <= 0
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-700"
+                }`}
+            >
+              {remainingStock <= 0 ? (`${t.product.outOfStock}`) : (`${t.product.addToCart}`)}
             </button>
 
             {cartItems.length > 0 && (
-              <button className="border border-purple-600 text-purple-600 px-6 py-3 rounded-xl hover:bg-purple-50 transition">
-                Checkout
+              <button className="cursor-pointer border border-purple-600 text-purple-600 px-6 py-3 rounded-xl hover:bg-purple-50 transition">
+                {t.product.checkout}
               </button>
+            )}
+          </div>
+          <div className="mb-4">
+            { remainingStock  > 0 ? (
+              <span className="text-green-600 text-sm font-medium">
+               {t.product.inStock} ({remainingStock})
+              </span>
+            ) : (
+              <span className="text-red-500 text-sm font-medium">
+                {t.product.outOfStock}
+              </span>
             )}
           </div>
         </div>

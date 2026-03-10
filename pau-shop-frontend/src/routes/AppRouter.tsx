@@ -12,6 +12,8 @@ import SignupPage from "../pages/auth/SignupPage";
 import ProfilePage from "../pages/user/ProfilePage";
 import CheckoutPage from "../pages/user/CheckoutPage";
 
+import CartPage from "../pages/user/CartPage";
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -27,6 +29,7 @@ export default function AppRouter() {
 
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/cart" element={<CartPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
