@@ -1,7 +1,9 @@
 export interface ShippingAddress {
   id: string;
   user_id: string;
-
+  first_name: string;
+  last_name: string;
+  phone: string;
   street: string;
   exterior_number: string;
   interior_number?: string | null;
@@ -14,6 +16,9 @@ export interface ShippingAddress {
 }
 
 export interface CreateAddressDTO {
+  first_name: string;
+  last_name: string;
+  phone: string;
   street: string;
   exterior_number: string;
   interior_number?: string;

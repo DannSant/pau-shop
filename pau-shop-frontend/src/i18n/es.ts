@@ -1,3 +1,5 @@
+import { t } from ".";
+import { logout } from "../features/auth/authSlice";
 import { addToCart } from "../features/cart/cartSlice";
 
 export const es = {
@@ -41,5 +43,13 @@ export const es = {
     inStock: "Disponibles",
     similarProducts: "Productos similares",
     checkout: "Proceder al pago"
+  },
+  login: {
+    title: "Iniciar sesión en tu cuenta",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    submit: "Iniciar sesión",
+    noAccount: "¿No tienes una cuenta? Regístrate",
+    logout: "Cerrar sesión"
   }
 };

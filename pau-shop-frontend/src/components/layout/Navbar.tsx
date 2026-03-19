@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { t } from "../../i18n";
 import { ShoppingCart } from "lucide-react";
+import LogoutButton from "../auth/LogoutButton";
 
 
 export default function Navbar() {
@@ -10,9 +11,10 @@ export default function Navbar() {
 
   const getItemCount = () => {
     const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    console.log(totalCount)
+
     return totalCount;
   }
+
 
   return (
     <nav className="bg-white shadow-md">
@@ -27,7 +29,7 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           <Link to="/browse" className="hover:text-purple-600">
             {t.navbar.browse}
-          </Link> 
+          </Link>
 
           <Link
             to="/cart"
@@ -43,14 +45,18 @@ export default function Navbar() {
           </Link>
 
           {user ? (
-            <Link to="/profile" className="hover:text-purple-600">
-              {t.navbar.profile}
-            </Link>
+            <>
+              <Link to="/profile" className="hover:text-purple-600">
+                {t.navbar.profile}
+              </Link>
+              <LogoutButton />
+            </>
           ) : (
             <Link to="/login" className="hover:text-purple-600">
               {t.navbar.login}
             </Link>
           )}
+
         </div>
       </div>
     </nav>

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  calculateOrderTotal,
   createOrder,
   getMyOrders,
   getOrderDetail
@@ -30,6 +31,16 @@ export async function getOrderDetailHandler(req: Request, res: Response) {
   try {
     const user = (req as any).user;
     const order = await getOrderDetail(user.id, req.params.id);
+    return success(res,order);
+  } catch {
+    return failure(res,"Order not found",404)
+  }
+}
+
+export async function calculateTotalHandler(req: Request, res: Response) {
+  try {
+    const amount = parseFloat(req.query.amount as string);
+    const order = await calculateOrderTotal(amount);
     return success(res,order);
   } catch {
     return failure(res,"Order not found",404)

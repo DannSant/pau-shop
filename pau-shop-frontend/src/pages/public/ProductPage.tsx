@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import ProductCard from "../../components/product/ProductCard";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 export default function ProductPage() {
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const navigator = useNavigate();
   const products = useAppSelector((state) => state.products.items);
   const cartItems = useAppSelector((state) => state.cart.items);
   const loading = useAppSelector((state) => state.products.loading);
@@ -131,7 +132,9 @@ export default function ProductPage() {
             </button>
 
             {cartItems.length > 0 && (
-              <button className="cursor-pointer border border-purple-600 text-purple-600 px-6 py-3 rounded-xl hover:bg-purple-50 transition">
+              <button className="cursor-pointer border border-purple-600 text-purple-600 px-6 py-3 rounded-xl hover:bg-purple-50 transition"
+                onClick={() => navigator("/cart")}
+              >
                 {t.product.checkout}
               </button>
             )}

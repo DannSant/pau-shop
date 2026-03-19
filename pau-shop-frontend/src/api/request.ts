@@ -1,4 +1,3 @@
-import { api } from "./axios";
 
 interface BackendResponse<T> {
   data: T;

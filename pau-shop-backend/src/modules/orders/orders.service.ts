@@ -2,6 +2,20 @@ import { supabase } from "../../config/supabase";
 import { CreateOrderDTO } from "./orders.types";
 
 export async function createOrder(userId: string, input: CreateOrderDTO) {
+
+  const { data, error } = await supabase.rpc("create_order", {
+    p_user_id: userId,
+    p_shipping_address: input.shipping_address_id,
+    p_items: input.items
+  });
+
+  if (error) throw error;
+
+  return data;
+}
+
+/*
+export async function createOrder(userId: string, input: CreateOrderDTO) {
   if (!input.items || input.items.length === 0) {
     throw new Error("Order must contain at least one item");
   }
@@ -30,11 +44,14 @@ export async function createOrder(userId: string, input: CreateOrderDTO) {
     throw new Error("One or more products not found");
   }
 
+  const productMap = new Map(products.map(p => [p.id, p]));
+
   // 3️⃣ Validate stock + calculate total
-  let totalAmount = 0;
+  let subtotal = 0;
 
   const orderItemsToInsert = input.items.map(item => {
-    const product = products.find(p => p.id === item.product_id);
+    //const product = products.find(p => p.id === item.product_id);
+    const product = productMap.get(item.product_id);
 
     if (!product) {
       throw new Error("Product not found");
@@ -45,7 +62,7 @@ export async function createOrder(userId: string, input: CreateOrderDTO) {
     }
 
     const unitPrice = product.offer_price ?? product.price;
-    totalAmount += unitPrice * item.quantity;
+    subtotal += unitPrice * item.quantity;
 
     return {
       product_id: product.id,
@@ -55,13 +72,20 @@ export async function createOrder(userId: string, input: CreateOrderDTO) {
     };
   });
 
+  // Calculate total using utility function
+  const { total, tax, import_tax, shipping_fee } = calculateTotal(subtotal);
+
   // 4️⃣ Create order
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
       user_id: userId,
       shipping_address_id: input.shipping_address_id,
-      total_amount: totalAmount,
+      subtotal: subtotal,
+      tax: tax,
+      import_tax: import_tax,
+      shipping_fee: shipping_fee,
+      total_amount: total,
       status: "pending"
     })
     .select()
@@ -82,11 +106,28 @@ export async function createOrder(userId: string, input: CreateOrderDTO) {
     .insert(itemsWithOrderId);
 
   if (itemsError) {
+    // Rollback order if items insertion fails
+    await supabase
+      .from("orders")
+      .delete()
+      .eq("id", order.id);
     throw new Error("Failed to create order items");
   }
 
+  // 6️⃣ Decrease stock
+  for (const item of input.items) {
+    const product = productMap.get(item.product_id);
+
+    await supabase
+      .from("products")
+      .update({
+        stock: product.stock - item.quantity
+      })
+      .eq("id", item.product_id);
+  }
+
   return order;
-}
+}*/
 
 export async function getMyOrders(userId: string) {
   const { data, error } = await supabase
@@ -122,6 +163,16 @@ export async function getOrderDetail(userId: string, orderId: string | string[])
     ...order,
     items
   };
+}
+
+export async function calculateOrderTotal(subtotal: number) {
+  const { data, error } = await supabase.rpc("calculate_order_totals", {
+    p_subtotal: subtotal
+  });
+  if (error) {
+    throw error;
+  }
+  return data;
 }
 
 

@@ -7,6 +7,7 @@ import addressesRouter from "./modules/addresses/addresses.routes";
 import ordersRouter from "./modules/orders/orders.routes";
 import reviewsRouter from "./modules/reviews/reviews.routes";
 import productImagesRouter from "./modules/product-images/product-images.routes";
+import paymentsRouter from "./modules/payments/payments.routes";
 
 const router = Router();
 
@@ -16,5 +17,7 @@ router.use("/addresses", addressesRouter);
 router.use("/orders", ordersRouter);
 router.use("/products/:id/reviews", reviewsRouter);
 router.use("/products/:id/images", productImagesRouter);
+router.use("/payments", paymentsRouter);
+
 
 export default router;
