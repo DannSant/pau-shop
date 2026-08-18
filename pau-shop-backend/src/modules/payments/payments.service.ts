@@ -8,10 +8,10 @@ export async function createCheckoutSession(orderId: string, userId: string) {
     .from("orders")
     .select(`
       id,
-      total,
+      total_amount,
       order_items (
         quantity,
-        price,
+        unit_price,
         products (
           name
         )
@@ -31,7 +31,7 @@ export async function createCheckoutSession(orderId: string, userId: string) {
       product_data: {
         name: item.products.name
       },
-      unit_amount: Math.round(item.price * 100)
+      unit_amount: Math.round(item.unit_price * 100)
     },
     quantity: item.quantity
   }));
@@ -43,7 +43,7 @@ export async function createCheckoutSession(orderId: string, userId: string) {
 
     mode: "payment",
 
-    success_url: `${process.env.FRONTEND_URL}/order-success`,
+    success_url: `${process.env.FRONTEND_URL}/order-success?order_id=${orderId}`,
     cancel_url: `${process.env.FRONTEND_URL}/checkout`,
 
     metadata: {

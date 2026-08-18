@@ -4,17 +4,19 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { useNavigate } from "react-router-dom";
 import { fetchOrderTotals } from "../../features/orders/orderSlice";
 import AddressSection from "../../components/checkout/AddressSection";
-import { formatAddress } from "../../types/address";
+
+import { startCheckout } from "../../features/checkout/checkoutSlice";
+import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const cartItems = useAppSelector((state) => state.cart.items);
   const totals = useAppSelector((state) => state.order.totals);
-  const { address: selectedAddress } = useAppSelector(
-        (state) => state.checkout
-    );
+  const { address: selectedAddress, addressConfirmed } = useAppSelector(
+    (state) => state.checkout
+  );
 
-  const dispatch = useAppDispatch(); 
+  const dispatch = useAppDispatch();
 
 
   useEffect(() => {
@@ -27,7 +29,15 @@ export default function CheckoutPage() {
   }, [cartItems, dispatch]);
 
   const initCheckout = () => {
-    console.log("Shipping to..." + formatAddress(selectedAddress))
+    if (!selectedAddress) {
+      toast.error("Please select a shipping address before proceeding to checkout.");
+      return;
+    }
+    dispatch(startCheckout());
+  }
+
+  const shouldEnableCheckout = () => {
+    return addressConfirmed && selectedAddress !== null && totals !== null && cartItems.length > 0;
   }
 
   // Prevent accessing checkout with empty cart
@@ -71,12 +81,12 @@ export default function CheckoutPage() {
 
             <div className="flex justify-between">
               <span>Subtotal</span>
-             <span>${totals?.subtotal?.toFixed(2)}</span>
+              <span>${totals?.subtotal?.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between">
               <span>CA Tax (8.5%)</span>
-             <span>${totals?.tax?.toFixed(2)}</span>
+              <span>${totals?.tax?.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between">
@@ -98,7 +108,7 @@ export default function CheckoutPage() {
 
           </div>
 
-          <button className="mt-6 w-full bg-purple-600 hover:bg-purple-700 transition py-3 rounded-xl cursor-pointer" onClick={initCheckout}>
+          <button className="mt-6 w-full bg-purple-600 hover:bg-purple-700 transition py-3 rounded-xl cursor-pointer" onClick={initCheckout} disabled={!shouldEnableCheckout()}>
             Pay Now
           </button>
 

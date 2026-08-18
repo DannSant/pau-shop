@@ -238,7 +238,7 @@ Frontend can display confirmation page.
 
 Create:
 
-/checkout/success
+/order-success
 
 Features:
 

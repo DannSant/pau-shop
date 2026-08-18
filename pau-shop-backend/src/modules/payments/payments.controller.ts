@@ -9,13 +9,14 @@ export async function createCheckoutSessionHandler(
   try {
 
     const { order_id } = req.body;
-    const userId = (req as any).id;
+    const userId = (req as any).user.id;
 
     const session = await createCheckoutSession(order_id, userId);
 
     return success(res, session);
 
   } catch (err: any) {
+    console.log(err)
     return failure(res, err.message);
   }
 }

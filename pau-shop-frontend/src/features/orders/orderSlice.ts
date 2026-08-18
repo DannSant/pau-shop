@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { calculateTotals } from "../../api/orders";
+import { calculateTotals, getOrderDetail, getMyOrders, type Order, type OrderDetail } from "../../api/orders";
 
 interface OrderTotals {
   subtotal: number;
@@ -15,20 +15,43 @@ interface OrderState {
   status: "idle" | "creating" | "created" | "paid";
   loading: boolean;
   error: string | null;
+  orderDetail?: OrderDetail;
+  orderDetailLoading: boolean;
+  orderDetailError: string | null;
+  myOrders: Order[];
+  myOrdersLoading: boolean;
 }
 
 const initialState: OrderState = {
   status: "idle",
   loading: false,
   error: null,
+  orderDetailLoading: false,
+  orderDetailError: null,
+  myOrders: [],
+  myOrdersLoading: false,
 };
 
 export const fetchOrderTotals = createAsyncThunk(
   "order/fetchTotals",
   async (amount: number) => {
     const response = await calculateTotals(amount);
-    
+
     return (response as any)[0];
+  }
+);
+
+export const fetchOrderDetail = createAsyncThunk(
+  "order/fetchDetail",
+  async (orderId: string) => {
+    return await getOrderDetail(orderId);
+  }
+);
+
+export const fetchMyOrders = createAsyncThunk(
+  "order/fetchMyOrders",
+  async () => {
+    return await getMyOrders();
   }
 );
 
@@ -70,6 +93,28 @@ const orderSlice = createSlice({
       .addCase(fetchOrderTotals.rejected, (state) => {
         state.loading = false;
         state.error = "Failed to calculate totals";
+      })
+      .addCase(fetchOrderDetail.pending, (state) => {
+        state.orderDetailLoading = true;
+        state.orderDetailError = null;
+      })
+      .addCase(fetchOrderDetail.fulfilled, (state, action) => {
+        state.orderDetailLoading = false;
+        state.orderDetail = action.payload;
+      })
+      .addCase(fetchOrderDetail.rejected, (state, action) => {
+        state.orderDetailLoading = false;
+        state.orderDetailError = action.error.message ?? "Failed to fetch order";
+      })
+      .addCase(fetchMyOrders.pending, (state) => {
+        state.myOrdersLoading = true;
+      })
+      .addCase(fetchMyOrders.fulfilled, (state, action) => {
+        state.myOrdersLoading = false;
+        state.myOrders = action.payload;
+      })
+      .addCase(fetchMyOrders.rejected, (state) => {
+        state.myOrdersLoading = false;
       });
   },
 });

@@ -2,6 +2,7 @@ import {  useEffect, useState } from "react";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import {
+    setAddressConfirmed,
     setSelectedAddress,
 } from "../../features/checkout/checkoutSlice";
 import AddressForm from "./AddressForm";
@@ -26,6 +27,10 @@ export default function AddressSection() {
     useEffect(() => {
         dispatch(fetchAddresses());
     }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(setAddressConfirmed(confirmed));
+    }, [confirmed, dispatch]);
 
     useEffect(() => {
         if (addresses.length > 0) {

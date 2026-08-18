@@ -14,6 +14,8 @@ import SignupPage from "../pages/auth/SignupPage";
 
 import ProfilePage from "../pages/user/ProfilePage";
 import CheckoutPage from "../pages/user/CheckoutPage";
+import OrderSuccessPage from "../pages/user/OrderSuccessPage";
+import OrdersPage from "../pages/user/OrdersPage";
 
 import CartPage from "../pages/user/CartPage";
 import useAuthInit from "../hooks/useAuthInit";
@@ -36,6 +38,8 @@ export default function AppRouter() {
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
             <Route path="/cart" element={<CartPage />} />
           </Route>
           {/* ADMIN ROUTES */}
