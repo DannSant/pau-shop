@@ -60,17 +60,25 @@ export default function AddressSection() {
     }
 
     // Confirm selected/edited address
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (!editingAddress) {
             console.error("No address to save");
             return;
         }
-        if (editingAddress?.id) {
-            dispatch(updateAddress(editingAddress));
-        } else {
-            dispatch(createAddress(editingAddress));
+
+        try {
+            const saved = editingAddress.id
+                ? await dispatch(updateAddress(editingAddress)).unwrap()
+                : await dispatch(createAddress(editingAddress)).unwrap();
+
+            setSelectedId(saved.id!);
+            setEditingAddress(saved);
+            setShowForm(false);
+            setConfirmed(true);
+            dispatch(setSelectedAddress(saved));
+        } catch (err) {
+            console.error("Failed to save address", err);
         }
-        
     };
 
     const handleSelectAddress = () => {

@@ -12,6 +12,7 @@ export default function OrderSuccessPage() {
   const { orderDetail, orderDetailLoading, orderDetailError } = useAppSelector(
     (state) => state.order
   );
+  const products = useAppSelector((state) => state.products.items);
 
   useEffect(() => {
     if (orderId) {
@@ -60,12 +61,22 @@ export default function OrderSuccessPage() {
     day: "numeric",
   });
 
+  const paidDate = orderDetail.paid_at
+    ? new Date(orderDetail.paid_at).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : null;
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 text-white">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold mb-2">Thank you for your purchase!</h1>
         <p className="text-white/70">
-          Your order has been {orderDetail.status === "paid" ? "paid" : "placed"} successfully.
+          {paidDate
+            ? `Your order was paid on ${paidDate}.`
+            : "Your order has been placed successfully."}
         </p>
       </div>
 
@@ -75,9 +86,15 @@ export default function OrderSuccessPage() {
             <p className="text-sm text-white/60">Order number</p>
             <p className="font-mono text-sm">{orderDetail.id}</p>
           </div>
-          <div className="sm:text-right">
-            <p className="text-sm text-white/60">Date</p>
+          <div>
+            <p className="text-sm text-white/60">Order date</p>
             <p>{orderDate}</p>
+          </div>
+          <div className="sm:text-right">
+            <p className="text-sm text-white/60">Payment status</p>
+            <p className="capitalize">
+              {orderDetail.status === "paid" ? `Paid${paidDate ? ` on ${paidDate}` : ""}` : orderDetail.status}
+            </p>
           </div>
         </div>
 
@@ -86,15 +103,32 @@ export default function OrderSuccessPage() {
         <h2 className="text-xl font-semibold mb-4">Items</h2>
 
         <div className="space-y-3">
-          {orderDetail.items.map((item) => (
-            <div key={item.id} className="flex justify-between items-center text-sm">
-              <div>
-                <p className="font-medium">{item.product_name}</p>
-                <p className="text-white/60">Qty: {item.quantity}</p>
+          {orderDetail.items.map((item) => {
+            const product = products.find((p) => p.id === item.product_id);
+            const images = product?.product_images ?? [];
+            const thumbnail = images.find((img) => img.is_thumbnail)?.url || images[0]?.url;
+
+            return (
+              <div key={item.id} className="flex justify-between items-center text-sm gap-4">
+                <div className="flex items-center gap-4">
+                  {thumbnail ? (
+                    <img
+                      src={thumbnail}
+                      alt={item.product_name}
+                      className="w-14 h-14 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-lg bg-white/10" />
+                  )}
+                  <div>
+                    <p className="font-medium">{item.product_name}</p>
+                    <p className="text-white/60">Qty: {item.quantity}</p>
+                  </div>
+                </div>
+                <p>${(item.unit_price * item.quantity).toFixed(2)}</p>
               </div>
-              <p>${(item.unit_price * item.quantity).toFixed(2)}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <hr className="border-white/20 my-6" />

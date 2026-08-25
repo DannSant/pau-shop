@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,7 @@ export default function CheckoutPage() {
 
   const dispatch = useAppDispatch();
 
+  const [showAddressError, setShowAddressError] = useState(false);
 
   useEffect(() => {
     const subtotal = cartItems.reduce(
@@ -28,16 +29,23 @@ export default function CheckoutPage() {
     dispatch(fetchOrderTotals(subtotal));
   }, [cartItems, dispatch]);
 
+  useEffect(() => {
+    if (selectedAddress && addressConfirmed) {
+      setShowAddressError(false);
+    }
+  }, [selectedAddress, addressConfirmed]);
+
   const initCheckout = () => {
-    if (!selectedAddress) {
-      toast.error("Please select a shipping address before proceeding to checkout.");
+    if (!selectedAddress || !addressConfirmed) {
+      toast.error("Select an address first");
+      setShowAddressError(true);
       return;
     }
     dispatch(startCheckout());
   }
 
   const shouldEnableCheckout = () => {
-    return addressConfirmed && selectedAddress !== null && totals !== null && cartItems.length > 0;
+    return totals !== null && cartItems.length > 0;
   }
 
   // Prevent accessing checkout with empty cart
@@ -111,6 +119,12 @@ export default function CheckoutPage() {
           <button className="mt-6 w-full bg-purple-600 hover:bg-purple-700 transition py-3 rounded-xl cursor-pointer" onClick={initCheckout} disabled={!shouldEnableCheckout()}>
             Pay Now
           </button>
+
+          {showAddressError && (
+            <p className="mt-2 text-red-500 text-sm text-center">
+              Select an address first
+            </p>
+          )}
 
         </div>
 

@@ -33,7 +33,7 @@ export async function stripeWebhookHandler(req: Request, res: Response) {
       // ✅ Update order status
       await supabase
         .from("orders")
-        .update({ status: "paid" })
+        .update({ status: "paid", paid_at: new Date().toISOString() })
         .eq("id", orderId);
 
       console.log("✅ Order marked as paid:", orderId);

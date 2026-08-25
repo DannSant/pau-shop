@@ -33,6 +33,7 @@ export interface Order {
   total_amount: number;
   status: string;
   created_at: string;
+  paid_at: string | null;
 }
 
 export interface OrderDetail extends Order {
