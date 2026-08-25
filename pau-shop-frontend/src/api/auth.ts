@@ -28,3 +28,23 @@ export const login = async (email: string, password: string) => {
 
   return data;
 };
+
+export const signup = async (
+  email: string,
+  password: string,
+  name: string,
+  phone: string
+) => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name, phone },
+      emailRedirectTo: `${window.location.origin}/login`,
+    },
+  });
+
+  if (error) throw error;
+
+  return data;
+};

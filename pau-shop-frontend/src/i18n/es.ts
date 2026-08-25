@@ -51,5 +51,23 @@ export const es = {
     submit: "Iniciar sesión",
     noAccount: "¿No tienes una cuenta? Regístrate",
     logout: "Cerrar sesión"
+  },
+  signup: {
+    title: "Crea tu cuenta",
+    name: "Nombre completo",
+    phone: "Teléfono",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    confirmPassword: "Confirmar contraseña",
+    submit: "Registrarme",
+    submitting: "Registrando...",
+    passwordMismatch: "Las contraseñas no coinciden",
+    haveAccount: "¿Ya tienes una cuenta? Inicia sesión",
+    orDivider: "o",
+    googleButton: "Continuar con Google",
+    checkEmailTitle: "Revisa tu correo",
+    checkEmailBody:
+      "Te enviamos un correo para confirmar tu cuenta. Confírmalo antes de iniciar sesión.",
+    backToLogin: "Volver a iniciar sesión"
   }
 };

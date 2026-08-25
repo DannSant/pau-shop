@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { supabase } from "../lib/supabase";
 import { setUser } from "../features/auth/authSlice";
+import { ensureUserProfile } from "../features/auth/ensureUserProfile";
 
 export default function useAuthInit() {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ export default function useAuthInit() {
         );
 
         localStorage.setItem("token", data.session.access_token);
+        ensureUserProfile(user);
       }
     };
 

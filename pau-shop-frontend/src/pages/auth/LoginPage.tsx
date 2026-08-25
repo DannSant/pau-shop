@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../app/store";
 import { loginUser } from "../../features/auth/authSlice";
 import { useLocation } from "react-router-dom";
@@ -10,10 +10,14 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/";
   const { loading, error, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
+  const cartEmpty = useSelector(
+    (state: RootState) => state.cart.items.length === 0
+  );
+
+  const from = location.state?.from?.pathname || (cartEmpty ? "/" : "/cart");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,6 +82,13 @@ export default function LoginPage() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
+
+        <Link
+          to="/signup"
+          className="block text-center text-blue-400 mt-4"
+        >
+          {t.login.noAccount}
+        </Link>
       </form>
     </div>
   );

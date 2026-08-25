@@ -9,5 +9,5 @@ export interface UserProfile {
 
 export interface CreateUserProfileDTO {
   name: string;
-  phone?: string;
+  phone: string;
 }

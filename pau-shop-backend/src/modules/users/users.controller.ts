@@ -10,6 +10,10 @@ export async function createProfileHandler(req: Request, res: Response) {
   try {
     const user = (req as any).user;
 
+    if (!req.body.phone) {
+      return failure(res, "Phone is required", 400);
+    }
+
     const profile = await createUserProfile(
       user.id,
       user.email,
