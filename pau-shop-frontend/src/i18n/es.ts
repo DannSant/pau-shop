@@ -1,7 +1,3 @@
-import { t } from ".";
-import { logout } from "../features/auth/authSlice";
-import { addToCart } from "../features/cart/cartSlice";
-
 export const es = {
   navbar: {
     home: "Inicio",
@@ -69,5 +65,51 @@ export const es = {
     checkEmailBody:
       "Te enviamos un correo para confirmar tu cuenta. Confírmalo antes de iniciar sesión.",
     backToLogin: "Volver a iniciar sesión"
+  },
+  profile: {
+    title: "Mi perfil",
+    tabGeneral: "General",
+    tabOrders: "Historial de pedidos",
+    name: "Nombre",
+    email: "Correo electrónico",
+    phone: "Teléfono",
+    memberSince: "Miembro desde",
+    noPhone: "Sin teléfono",
+    phoneMissing:
+      "Agrega tu número de teléfono: lo necesitamos para contactarte al enviar tus pedidos.",
+    edit: "Editar",
+    save: "Guardar",
+    saving: "Guardando...",
+    cancel: "Cancelar",
+    saved: "Perfil actualizado",
+    loading: "Cargando tu perfil...",
+    loadError: "No pudimos cargar tu perfil."
+  },
+  orders: {
+    loading: "Cargando tus pedidos...",
+    empty: "Aún no has realizado ningún pedido.",
+    items: "Artículos",
+    andMore: (n: number) => `y ${n} más`,
+    date: "Fecha",
+    status: {
+      pending: "Pendiente",
+      paid: "Pagado",
+      shipped: "Enviado",
+      delivered: "Entregado",
+      cancelled: "Cancelado"
+    } as Record<string, string>,
+    detailTitle: "Detalle del pedido",
+    orderNumber: "Número de pedido",
+    quantity: "Cantidad",
+    subtotal: "Subtotal",
+    tax: "Impuestos",
+    importTax: "Impuesto de importación",
+    shipping: "Envío",
+    total: "Total",
+    shippingStatus: "Estado del envío",
+    comingSoon: "Disponible próximamente",
+    back: "Volver al historial",
+    detailLoading: "Cargando tu pedido...",
+    notFound: "No encontramos este pedido"
   }
 };

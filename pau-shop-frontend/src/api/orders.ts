@@ -24,16 +24,22 @@ export interface OrderItem {
   product_name: string;
   unit_price: number;
   quantity: number;
+  image_url: string | null;
 }
 
 export interface Order {
   id: string;
   user_id: string;
   shipping_address_id: string;
+  subtotal: number;
+  tax: number;
+  import_tax: number;
+  shipping_fee: number;
   total_amount: number;
   status: string;
   created_at: string;
   paid_at: string | null;
+  order_items?: { product_name: string; quantity: number }[];
 }
 
 export interface OrderDetail extends Order {

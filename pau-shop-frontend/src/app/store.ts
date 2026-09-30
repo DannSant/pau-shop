@@ -6,10 +6,12 @@ import shippingReducer from "../features/shipping/shippingSlice";
 import orderReducer from "../features/orders/orderSlice";
 import checkoutReducer from "../features/checkout/checkoutSlice";
 import addressReducer from "../features/address/addressSlice";
+import profileReducer from "../features/profile/profileSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    profile: profileReducer,
     cart: cartReducer,
     products: productsReducer,
     shipping: shippingReducer,

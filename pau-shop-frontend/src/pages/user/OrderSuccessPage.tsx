@@ -12,7 +12,6 @@ export default function OrderSuccessPage() {
   const { orderDetail, orderDetailLoading, orderDetailError } = useAppSelector(
     (state) => state.order
   );
-  const products = useAppSelector((state) => state.products.items);
 
   useEffect(() => {
     if (orderId) {
@@ -104,16 +103,12 @@ export default function OrderSuccessPage() {
 
         <div className="space-y-3">
           {orderDetail.items.map((item) => {
-            const product = products.find((p) => p.id === item.product_id);
-            const images = product?.product_images ?? [];
-            const thumbnail = images.find((img) => img.is_thumbnail)?.url || images[0]?.url;
-
             return (
               <div key={item.id} className="flex justify-between items-center text-sm gap-4">
                 <div className="flex items-center gap-4">
-                  {thumbnail ? (
+                  {item.image_url ? (
                     <img
-                      src={thumbnail}
+                      src={item.image_url}
                       alt={item.product_name}
                       className="w-14 h-14 object-cover rounded-lg"
                     />

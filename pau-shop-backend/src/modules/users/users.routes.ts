@@ -4,13 +4,15 @@ import { requireAdmin } from "../../middlewares/admin.middleware";
 import {
   createProfileHandler,
   getMeHandler,
-  getUsersHandler
+  getUsersHandler,
+  updateMeHandler
 } from "./users.controller";
 
 const router = Router();
 
 router.post("/profile", requireAuth, createProfileHandler);
 router.get("/me", requireAuth, getMeHandler);
+router.patch("/me", requireAuth, updateMeHandler);
 router.get("/", requireAuth, requireAdmin, getUsersHandler);
 
 export default router;

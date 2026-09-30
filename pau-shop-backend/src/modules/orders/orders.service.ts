@@ -132,7 +132,7 @@ export async function createOrder(userId: string, input: CreateOrderDTO) {
 export async function getMyOrders(userId: string) {
   const { data, error } = await supabase
     .from("orders")
-    .select("*")
+    .select("*, order_items(product_name, quantity)")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -154,14 +154,21 @@ export async function getOrderDetail(userId: string, orderId: string | string[])
 
   const { data: items, error: itemsError } = await supabase
     .from("order_items")
-    .select("*")
+    .select("*, products(product_images(url, is_thumbnail))")
     .eq("order_id", orderId);
 
   if (itemsError) throw itemsError;
 
   return {
     ...order,
-    items
+    items: items.map(({ products, ...item }: any) => {
+      const images: { url: string; is_thumbnail: boolean }[] =
+        products?.product_images ?? [];
+      const image =
+        images.find((img) => img.is_thumbnail) ?? images[0] ?? null;
+
+      return { ...item, image_url: image?.url ?? null };
+    })
   };
 }
 
