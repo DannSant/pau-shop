@@ -30,7 +30,7 @@ export default function ProductPage() {
     );
   }, [products, product]);
 
-  if (!product) return <div className="p-10">Producto no encontrado</div>;
+  if (!product) return <div className="p-10">{t.product.notFound}</div>;
 
   const cartItem = cartItems.find(
     (item) => item.product_id === product.id
@@ -58,10 +58,10 @@ export default function ProductPage() {
         quantity: 1,
       })
     );
-    toast.success(`${product.name} added to cart`);
+    toast.success(t.product.addedToCart(product.name));
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{t.product.loading}</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -157,7 +157,7 @@ export default function ProductPage() {
       {similarProducts.length > 0 && (
         <div className="mt-20">
           <h2 className="text-2xl font-bold mb-6">
-            Similar Products
+            {t.product.similarProducts}
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../app/store";
-import { signUpUser } from "../../features/auth/authSlice";
+import { clearAuthError, signUpUser } from "../../features/auth/authSlice";
 import { t } from "../../i18n";
 
 // Redirect after an immediate-session sign-up is handled by GuestRoute.
@@ -12,6 +12,10 @@ export default function SignupPage() {
   const { loading, error, confirmationRequired } = useSelector(
     (state: RootState) => state.auth
   );
+
+  useEffect(() => {
+    dispatch(clearAuthError());
+  }, [dispatch]);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -119,7 +123,9 @@ export default function SignupPage() {
         </div>
 
         {(localError || error) && (
-          <p className="text-red-400 mb-4">{localError || error}</p>
+          <p className="text-red-400 mb-4">
+            {localError ?? (error && (t.authErrors[error] ?? t.signup.failed))}
+          </p>
         )}
 
         <button

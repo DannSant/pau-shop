@@ -41,9 +41,9 @@ export default function HomePage() {
         </h2>
 
         {loading ? (
-          <p>Cargando productos...</p>
+          <p>{t.home.loading}</p>
         ) : featured.length === 0 ? (
-          <p>No hay productos destacados.</p>
+          <p>{t.home.noFeatured}</p>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((product) => (

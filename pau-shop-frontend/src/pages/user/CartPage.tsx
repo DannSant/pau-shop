@@ -19,14 +19,14 @@ export default function CartPage() {
   const handleAddProduct = (item: CartItem)=>{
     const product = products.find(p=>p.id === item.product_id);
     if(!product) {
-        toast.error("Product not found");
+        toast.error(t.cart.productNotFound);
         return;
     }
 
     const quantityInCart = item.quantity;
     const remainingStock = product.stock - quantityInCart;
     if(remainingStock <= 0) {
-        toast.error("Insufficient stock");
+        toast.error(t.cart.insufficientStock);
         return;
     }
     dispatch(addToCart({...item, quantity: 1}));

@@ -12,6 +12,7 @@ interface AuthState {
   user: AuthUser | null;
   token: string | null;
   loading: boolean;
+  // Supabase auth error code (or "unknown"); pages translate it via t.authErrors.
   error: string | null;
   isAuthenticated: boolean;
   confirmationRequired: boolean;
@@ -91,6 +92,9 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
     },   
+    clearAuthError(state) {
+      state.error = null;
+    },
     logout(state) {
       state.user = null;
       state.token = null;
@@ -118,9 +122,9 @@ const authSlice = createSlice({
         localStorage.setItem("token", action.payload.token);
       })
 
-      .addCase(loginUser.rejected, (state) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = "Login failed";
+        state.error = action.error.code ?? "unknown";
       })
 
       .addCase(signUpUser.pending, (state) => {
@@ -146,11 +150,11 @@ const authSlice = createSlice({
 
       .addCase(signUpUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message ?? "Sign up failed";
+        state.error = action.error.code ?? "unknown";
       });
   },
 });
 
-export const { logout, setUser } = authSlice.actions;
+export const { logout, setUser, clearAuthError } = authSlice.actions;
 
 export default authSlice.reducer;

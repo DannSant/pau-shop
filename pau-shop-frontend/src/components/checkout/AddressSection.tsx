@@ -6,6 +6,7 @@ import {
     setSelectedAddress,
 } from "../../features/checkout/checkoutSlice";
 import AddressForm from "./AddressForm";
+import { t } from "../../i18n";
 import type { Address } from "../../types/address";
 import { createAddress, fetchAddresses, updateAddress } from "../../features/address/addressSlice";
 
@@ -140,7 +141,7 @@ export default function AddressSection() {
                         onClick={handleShowAddressList}
                         className="border border-white/20 px-4 py-2 rounded-lg cursor-pointer"
                     >
-                        Use another address
+                        {t.address.useAnother}
                     </button>
                 </div>
 
@@ -181,20 +182,20 @@ export default function AddressSection() {
                                 onClick={handleAddNew}
                                 className="border border-white/20 px-4 py-2 rounded-lg cursor-pointer"
                             >
-                                Add new address
+                                {t.address.addNew}
                             </button>
 
                             <button
                                 onClick={handleEdit}
                                 className="border border-white/20 px-4 py-2 rounded-lg cursor-pointer"
                             >
-                                Change Address
+                                {t.address.edit}
                             </button>
                             <button
                                 onClick={handleSelectAddress}
                                 className="border border-white/20 px-4 py-2 rounded-lg cursor-pointer"
                             >
-                                Use this address
+                                {t.address.useThis}
                             </button>
                         </>
                     )}
@@ -213,14 +214,14 @@ export default function AddressSection() {
                         onClick={handleConfirm}
                         className="mt-4 bg-purple-600 px-6 py-2 rounded-lg cursor-pointer"
                     >
-                        Use this address
+                        {t.address.useThis}
                     </button>
 
                     <button
                         onClick={handleCancel}
                         className="mt-4 bg-red-600 px-6 py-2 rounded-lg cursor-pointer"
                     >
-                        Cancel
+                        {t.address.cancel}
                     </button>
 
                 </div>

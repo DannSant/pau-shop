@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../app/store";
-import { loginUser } from "../../features/auth/authSlice";
+import { clearAuthError, loginUser } from "../../features/auth/authSlice";
 import { t } from "../../i18n";
 
 // Redirect after login is handled by GuestRoute.
@@ -12,6 +12,10 @@ export default function LoginPage() {
   const { loading, error } = useSelector(
     (state: RootState) => state.auth
   );
+
+  useEffect(() => {
+    dispatch(clearAuthError());
+  }, [dispatch]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,7 +63,7 @@ export default function LoginPage() {
 
         {error && (
           <p className="text-red-400 mb-4">
-            {error}
+            {t.authErrors[error] ?? t.login.failed}
           </p>
         )}
 
@@ -68,7 +72,7 @@ export default function LoginPage() {
           className="w-full bg-blue-600 text-white p-2 rounded cursor-pointer"
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? t.login.submitting : t.login.submit}
         </button>
 
         <Link

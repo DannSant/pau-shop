@@ -1,5 +1,6 @@
 export const es = {
   navbar: {
+    brand: "PauShop",
     home: "Inicio",
     products: "Productos",
     browse: "Explorar",
@@ -11,7 +12,9 @@ export const es = {
     title: "Bienvenido a PauShop",
     description:
       "Descubre los mejores productos con ofertas exclusivas. Calidad, buen precio y envío rápido.",
-    featured: "Productos Destacados"
+    featured: "Productos Destacados",
+    loading: "Cargando productos...",
+    noFeatured: "No hay productos destacados."
   },
   cart: {
     yourCart: "Tu Carrito",
@@ -20,10 +23,13 @@ export const es = {
     total: "Total",
     remove: "Eliminar",
     quantity: "Cantidad",
-    browse: "Explorar Productos"
+    browse: "Explorar Productos",
+    productNotFound: "Producto no encontrado",
+    insufficientStock: "No hay suficiente stock"
   },
-  browswe: {
+  browse: {
     categories: "Categorías",
+    franchises: "Franquicias",
     all: "Todas",
     noProducts: "No hay productos.",
     products: "Productos"
@@ -38,13 +44,58 @@ export const es = {
     outOfStock: "Agotado",
     inStock: "Disponibles",
     similarProducts: "Productos similares",
-    checkout: "Proceder al pago"
+    checkout: "Proceder al pago",
+    loading: "Cargando...",
+    notFound: "Producto no encontrado",
+    addedToCart: (name: string) => `${name} se agregó al carrito`
+  },
+  checkout: {
+    title: "Finalizar compra",
+    shippingAddress: "Dirección de envío",
+    orderSummary: "Resumen del pedido",
+    subtotal: "Subtotal",
+    tax: "Impuesto CA (8.5%)",
+    importTax: "Impuesto de importación (16%)",
+    shipping: "Envío",
+    total: "Total",
+    payNow: "Pagar ahora",
+    selectAddressFirst: "Selecciona una dirección primero"
+  },
+  address: {
+    title: "Dirección de envío",
+    firstName: "Nombre",
+    lastName: "Apellido",
+    street: "Calle",
+    exteriorNumber: "Número exterior",
+    interiorNumber: "Número interior (opcional)",
+    neighborhood: "Colonia",
+    city: "Ciudad",
+    state: "Estado",
+    postalCode: "Código postal",
+    phone: "Teléfono",
+    useAnother: "Usar otra dirección",
+    addNew: "Agregar nueva dirección",
+    edit: "Editar dirección",
+    useThis: "Usar esta dirección",
+    cancel: "Cancelar"
+  },
+  orderSuccess: {
+    title: "¡Gracias por tu compra!",
+    paidOn: (date: string) => `Tu pedido se pagó el ${date}.`,
+    placed: "Tu pedido se realizó con éxito.",
+    notFound: "No encontramos tu pedido",
+    viewOrders: "Ver mis pedidos",
+    orderDate: "Fecha del pedido",
+    paymentStatus: "Estado del pago",
+    paidOnShort: (date: string) => `Pagado el ${date}`
   },
   login: {
     title: "Iniciar sesión en tu cuenta",
     email: "Correo electrónico",
     password: "Contraseña",
     submit: "Iniciar sesión",
+    submitting: "Iniciando sesión...",
+    failed: "No pudimos iniciar sesión. Inténtalo de nuevo.",
     noAccount: "¿No tienes una cuenta? Regístrate",
     logout: "Cerrar sesión"
   },
@@ -58,6 +109,7 @@ export const es = {
     submit: "Registrarme",
     submitting: "Registrando...",
     passwordMismatch: "Las contraseñas no coinciden",
+    failed: "No pudimos crear tu cuenta. Inténtalo de nuevo.",
     haveAccount: "¿Ya tienes una cuenta? Inicia sesión",
     orDivider: "o",
     googleButton: "Continuar con Google",
@@ -66,6 +118,18 @@ export const es = {
       "Te enviamos un correo para confirmar tu cuenta. Confírmalo antes de iniciar sesión.",
     backToLogin: "Volver a iniciar sesión"
   },
+  // Keyed by Supabase auth error code; pages fall back to their own `failed` text.
+  authErrors: {
+    invalid_credentials: "Correo o contraseña incorrectos.",
+    email_not_confirmed: "Confirma tu correo antes de iniciar sesión.",
+    user_already_exists: "Ya existe una cuenta con este correo.",
+    weak_password: "La contraseña es demasiado débil. Usa al menos 6 caracteres.",
+    email_address_invalid: "El correo electrónico no es válido.",
+    over_email_send_rate_limit:
+      "Se enviaron demasiados correos. Espera unos minutos e inténtalo de nuevo.",
+    over_request_rate_limit:
+      "Demasiados intentos. Espera unos minutos e inténtalo de nuevo."
+  } as Record<string, string>,
   profile: {
     title: "Mi perfil",
     tabGeneral: "General",
@@ -83,7 +147,8 @@ export const es = {
     cancel: "Cancelar",
     saved: "Perfil actualizado",
     loading: "Cargando tu perfil...",
-    loadError: "No pudimos cargar tu perfil."
+    loadError: "No pudimos cargar tu perfil.",
+    saveError: "No pudimos guardar los cambios. Inténtalo de nuevo."
   },
   orders: {
     loading: "Cargando tus pedidos...",

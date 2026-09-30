@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { fetchOrderDetail } from "../../features/orders/orderSlice";
+import { locale, t } from "../../i18n";
 
 export default function OrderSuccessPage() {
   const [searchParams] = useSearchParams();
@@ -22,12 +23,12 @@ export default function OrderSuccessPage() {
   if (!orderId) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-10 text-white text-center">
-        <h1 className="text-2xl font-bold mb-4">We couldn't find your order</h1>
+        <h1 className="text-2xl font-bold mb-4">{t.orderSuccess.notFound}</h1>
         <Link
-          to="/orders"
+          to="/profile?tab=orders"
           className="inline-block bg-purple-600 hover:bg-purple-700 transition px-6 py-3 rounded-xl"
         >
-          View my orders
+          {t.orderSuccess.viewOrders}
         </Link>
       </div>
     );
@@ -38,30 +39,29 @@ export default function OrderSuccessPage() {
       <div className="max-w-4xl mx-auto px-6 py-10 text-white text-center">
         {orderDetailError ? (
           <>
-            <h1 className="text-2xl font-bold mb-4">Order not found</h1>
-            <p className="text-white/70 mb-6">{orderDetailError}</p>
+            <h1 className="text-2xl font-bold mb-6">{t.orderSuccess.notFound}</h1>
             <Link
-              to="/orders"
+              to="/profile?tab=orders"
               className="inline-block bg-purple-600 hover:bg-purple-700 transition px-6 py-3 rounded-xl"
             >
-              View my orders
+              {t.orderSuccess.viewOrders}
             </Link>
           </>
         ) : (
-          <p>Loading your order...</p>
+          <p>{t.orders.detailLoading}</p>
         )}
       </div>
     );
   }
 
-  const orderDate = new Date(orderDetail.created_at).toLocaleDateString(undefined, {
+  const orderDate = new Date(orderDetail.created_at).toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
   const paidDate = orderDetail.paid_at
-    ? new Date(orderDetail.paid_at).toLocaleDateString(undefined, {
+    ? new Date(orderDetail.paid_at).toLocaleDateString(locale, {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -71,35 +71,37 @@ export default function OrderSuccessPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 text-white">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold mb-2">Thank you for your purchase!</h1>
+        <h1 className="text-3xl font-bold mb-2">{t.orderSuccess.title}</h1>
         <p className="text-white/70">
           {paidDate
-            ? `Your order was paid on ${paidDate}.`
-            : "Your order has been placed successfully."}
+            ? t.orderSuccess.paidOn(paidDate)
+            : t.orderSuccess.placed}
         </p>
       </div>
 
       <div className="bg-white/10 backdrop-blur rounded-2xl p-6 mb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
           <div>
-            <p className="text-sm text-white/60">Order number</p>
+            <p className="text-sm text-white/60">{t.orders.orderNumber}</p>
             <p className="font-mono text-sm">{orderDetail.id}</p>
           </div>
           <div>
-            <p className="text-sm text-white/60">Order date</p>
+            <p className="text-sm text-white/60">{t.orderSuccess.orderDate}</p>
             <p>{orderDate}</p>
           </div>
           <div className="sm:text-right">
-            <p className="text-sm text-white/60">Payment status</p>
-            <p className="capitalize">
-              {orderDetail.status === "paid" ? `Paid${paidDate ? ` on ${paidDate}` : ""}` : orderDetail.status}
+            <p className="text-sm text-white/60">{t.orderSuccess.paymentStatus}</p>
+            <p>
+              {orderDetail.status === "paid" && paidDate
+                ? t.orderSuccess.paidOnShort(paidDate)
+                : t.orders.status[orderDetail.status] ?? orderDetail.status}
             </p>
           </div>
         </div>
 
         <hr className="border-white/20 mb-6" />
 
-        <h2 className="text-xl font-semibold mb-4">Items</h2>
+        <h2 className="text-xl font-semibold mb-4">{t.orders.items}</h2>
 
         <div className="space-y-3">
           {orderDetail.items.map((item) => {
@@ -117,7 +119,7 @@ export default function OrderSuccessPage() {
                   )}
                   <div>
                     <p className="font-medium">{item.product_name}</p>
-                    <p className="text-white/60">Qty: {item.quantity}</p>
+                    <p className="text-white/60">{t.orders.quantity}: {item.quantity}</p>
                   </div>
                 </div>
                 <p>${(item.unit_price * item.quantity).toFixed(2)}</p>
@@ -129,17 +131,17 @@ export default function OrderSuccessPage() {
         <hr className="border-white/20 my-6" />
 
         <div className="flex justify-between font-bold text-lg">
-          <span>Total</span>
+          <span>{t.orders.total}</span>
           <span>${orderDetail.total_amount.toFixed(2)}</span>
         </div>
       </div>
 
       <div className="text-center">
         <Link
-          to="/orders"
+          to="/profile?tab=orders"
           className="inline-block bg-purple-600 hover:bg-purple-700 transition px-6 py-3 rounded-xl"
         >
-          View my orders
+          {t.orderSuccess.viewOrders}
         </Link>
       </div>
     </div>

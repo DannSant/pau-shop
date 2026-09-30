@@ -23,7 +23,7 @@ export default function Navbar() {
           to="/"
           className="text-xl font-bold text-purple-600"
         >
-          PauShop
+          {t.navbar.brand}
         </Link>
 
         <div className="flex items-center gap-6">

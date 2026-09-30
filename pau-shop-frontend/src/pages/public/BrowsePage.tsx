@@ -40,7 +40,7 @@ export default function BrowsePage() {
     <div className="flex flex-col lg:flex-row gap-10">
       {/* Sidebar */}
       <aside className="w-full lg:w-64 bg-white rounded-2xl shadow-md p-6 h-fit lg:sticky lg:top-24">
-        <h2 className="font-bold mb-4">{t.browswe.categories}</h2>
+        <h2 className="font-bold mb-4">{t.browse.categories}</h2>
 
         <button
           onClick={() =>
@@ -53,7 +53,7 @@ export default function BrowsePage() {
           className={`block w-full text-left mb-2 ${!selectedCategory ? "text-purple-600 font-semibold" : ""
             }`}
         >
-          {t.browswe.all}
+          {t.browse.all}
         </button>
 
         {categories.map((category) => (
@@ -75,7 +75,7 @@ export default function BrowsePage() {
           </button>
         ))}
         <div className="mt-8">
-          <h2 className="font-bold mb-4">Franquicias</h2>
+          <h2 className="font-bold mb-4">{t.browse.franchises}</h2>
 
           <button
             onClick={() =>
@@ -88,7 +88,7 @@ export default function BrowsePage() {
             className={`block w-full text-left mb-2 ${!selectedFranchise ? "text-purple-600 font-semibold" : ""
               }`}
           >
-            Todas
+            {t.browse.all}
           </button>
 
           {franchises.map((franchise) => (
@@ -115,11 +115,11 @@ export default function BrowsePage() {
       {/* Products */}
       <section className="flex-1">
         <h1 className="text-2xl font-bold mb-8 text-white">
-          {t.browswe.products}
+          {t.browse.products}
         </h1>
 
         {filteredProducts.length === 0 ? (
-          <p>{t.browswe.noProducts}</p>
+          <p>{t.browse.noProducts}</p>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => (

@@ -24,7 +24,7 @@ export default function ProfileGeneralTab() {
   }
 
   if (!profile) {
-    return <p className="text-red-400">{error ?? t.profile.loadError}</p>;
+    return <p className="text-red-400">{t.profile.loadError}</p>;
   }
 
   const startEditing = () => {
@@ -107,7 +107,7 @@ export default function ProfileGeneralTab() {
           </div>
         </div>
 
-        {editing && error && <p className="text-red-400 mt-6">{error}</p>}
+        {editing && error && <p className="text-red-400 mt-6">{t.profile.saveError}</p>}
 
         <div className="flex justify-end gap-3 mt-8">
           {editing ? (

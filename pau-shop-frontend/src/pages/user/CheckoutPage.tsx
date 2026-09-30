@@ -7,6 +7,7 @@ import AddressSection from "../../components/checkout/AddressSection";
 
 import { startCheckout } from "../../features/checkout/checkoutSlice";
 import toast from "react-hot-toast";
+import { t } from "../../i18n";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function CheckoutPage() {
 
   const initCheckout = () => {
     if (!selectedAddress || !addressConfirmed) {
-      toast.error("Select an address first");
+      toast.error(t.checkout.selectAddressFirst);
       setShowAddressError(true);
       return;
     }
@@ -58,7 +59,7 @@ export default function CheckoutPage() {
     <div className="max-w-7xl mx-auto px-6 py-10 text-white">
 
       <h1 className="text-3xl font-bold mb-10">
-        Checkout
+        {t.checkout.title}
       </h1>
 
       {/* Main Layout */}
@@ -70,7 +71,7 @@ export default function CheckoutPage() {
           {/* Shipping Address Section */}
           <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
             <h2 className="text-xl font-semibold mb-4">
-              Shipping Address
+              {t.checkout.shippingAddress}
             </h2>
 
             <AddressSection />
@@ -82,47 +83,47 @@ export default function CheckoutPage() {
         <div className="bg-white/10 backdrop-blur rounded-2xl p-6 h-fit">
 
           <h2 className="text-xl font-semibold mb-6">
-            Order Summary
+            {t.checkout.orderSummary}
           </h2>
 
           <div className="space-y-3 text-sm">
 
             <div className="flex justify-between">
-              <span>Subtotal</span>
+              <span>{t.checkout.subtotal}</span>
               <span>${totals?.subtotal?.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between">
-              <span>CA Tax (8.5%)</span>
+              <span>{t.checkout.tax}</span>
               <span>${totals?.tax?.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between">
-              <span>Import Tax (16%)</span>
+              <span>{t.checkout.importTax}</span>
               <span>${totals?.import_tax?.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between">
-              <span>Shipping</span>
+              <span>{t.checkout.shipping}</span>
               <span>${totals?.shipping_fee?.toFixed(2)}</span>
             </div>
 
             <hr className="border-white/20 my-4" />
 
             <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
+              <span>{t.checkout.total}</span>
               <span>${totals?.total?.toFixed(2)}</span>
             </div>
 
           </div>
 
           <button className="mt-6 w-full bg-purple-600 hover:bg-purple-700 transition py-3 rounded-xl cursor-pointer" onClick={initCheckout} disabled={!shouldEnableCheckout()}>
-            Pay Now
+            {t.checkout.payNow}
           </button>
 
           {showAddressError && (
             <p className="mt-2 text-red-500 text-sm text-center">
-              Select an address first
+              {t.checkout.selectAddressFirst}
             </p>
           )}
 
