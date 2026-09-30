@@ -1,18 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../app/store";
 import { signUpUser } from "../../features/auth/authSlice";
 import { t } from "../../i18n";
 
+// Redirect after an immediate-session sign-up is handled by GuestRoute.
 export default function SignupPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
 
-  const { loading, error, isAuthenticated, confirmationRequired } =
-    useSelector((state: RootState) => state.auth);
-  const cartEmpty = useSelector(
-    (state: RootState) => state.cart.items.length === 0
+  const { loading, error, confirmationRequired } = useSelector(
+    (state: RootState) => state.auth
   );
 
   const [name, setName] = useState("");
@@ -38,12 +36,6 @@ export default function SignupPage() {
   const handleGoogleSignUp = () => {
     // Google sign-up logic will be implemented later.
   };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(cartEmpty ? "/" : "/cart", { replace: true });
-    }
-  }, [isAuthenticated, navigate, cartEmpty]);
 
   if (confirmationRequired) {
     return (

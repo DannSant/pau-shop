@@ -1,32 +1,40 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { supabase } from "../lib/supabase";
-import { setUser } from "../features/auth/authSlice";
+import { logout, setUser } from "../features/auth/authSlice";
 import { ensureUserProfile } from "../features/auth/ensureUserProfile";
 
 export default function useAuthInit() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const initAuth = async () => {
-      const { data } = await supabase.auth.getSession();
+    // Fires INITIAL_SESSION on subscribe, then on every auth change,
+    // including ones made in other tabs (e.g. the email confirmation link).
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session?.user) {
+        if (event === "INITIAL_SESSION" || event === "SIGNED_OUT") {
+          dispatch(logout());
+        }
+        return;
+      }
 
-      if (data.session?.user) {
-        const user = data.session.user;
+      const user = session.user;
 
-        dispatch(
-          setUser({
-            id: user.id,
-            email: user.email ?? "",
-            role: user.role ?? "user",
-          })
-        );
+      localStorage.setItem("token", session.access_token);
 
-        localStorage.setItem("token", data.session.access_token);
+      dispatch(
+        setUser({
+          id: user.id,
+          email: user.email ?? "",
+          role: user.role ?? "user",
+        })
+      );
+
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
         ensureUserProfile(user);
       }
-    };
+    });
 
-    initAuth();
+    return () => data.subscription.unsubscribe();
   }, [dispatch]);
 }

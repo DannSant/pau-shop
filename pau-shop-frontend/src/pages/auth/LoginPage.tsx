@@ -1,23 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../app/store";
 import { loginUser } from "../../features/auth/authSlice";
-import { useLocation } from "react-router-dom";
 import { t } from "../../i18n";
+
+// Redirect after login is handled by GuestRoute.
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const { loading, error, isAuthenticated } = useSelector(
+  const { loading, error } = useSelector(
     (state: RootState) => state.auth
   );
-  const cartEmpty = useSelector(
-    (state: RootState) => state.cart.items.length === 0
-  );
-
-  const from = location.state?.from?.pathname || (cartEmpty ? "/" : "/cart");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,12 +26,6 @@ export default function LoginPage() {
       })
     );
   };
-
-  useEffect(() => {
-  if (isAuthenticated) {
-    navigate(from, { replace: true });
-  }
-}, [isAuthenticated, navigate, from]);
 
   return (
     <div className="flex justify-center items-center min-h-[70vh]">

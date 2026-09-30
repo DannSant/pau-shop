@@ -17,6 +17,12 @@ export async function createUserProfile(
     .select()
     .single();
 
+  // Already created (e.g. two tabs provisioning at once): return the existing
+  // row unchanged so the endpoint is idempotent.
+  if (error?.code === "23505") {
+    return getMyProfile(userId);
+  }
+
   if (error) throw error;
   return data;
 }

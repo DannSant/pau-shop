@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { login, signup } from "../../api/auth";
-import { createProfile } from "../../api/users";
 import { supabase } from "../../lib/supabase";
-import { ensureUserProfile } from "./ensureUserProfile";
 
 interface AuthUser {
   id: string;
@@ -35,9 +33,6 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }) => {
     const data = await login(email, password);
 
-    localStorage.setItem("token", data.session.access_token);
-    ensureUserProfile(data.user);
-
     return {
        user: {
         id: data.user.id,
@@ -65,9 +60,8 @@ export const signUpUser = createAsyncThunk(
       return { confirmationRequired: true as const };
     }
 
-    localStorage.setItem("token", data.session.access_token);
-    await createProfile({ name, phone });
-
+    // The user_data row is created by ensureUserProfile via the
+    // SIGNED_IN listener in useAuthInit.
     return {
       confirmationRequired: false as const,
       user: {

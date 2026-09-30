@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import GuestRoute from "./GuestRoute";
 import AdminRoute from "./AdminRoute";
 
 import MainLayout from "../components/layout/MainLayout";
@@ -31,8 +32,12 @@ export default function AppRouter() {
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/products/:id" element={<ProductPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+
+          {/* GUEST-ONLY ROUTES */}
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
 
            {/* PROTECTED ROUTES */}
           <Route element={<ProtectedRoute />}>
