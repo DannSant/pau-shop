@@ -2,7 +2,7 @@ import {  useDispatch } from "react-redux";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { addToCart, removeFromCart, type CartItem } from  "../../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
-import { t } from "../../i18n";
+import { localize, t } from "../../i18n";
 import toast from "react-hot-toast";
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ export default function CartPage() {
           >
 
             <div>
-              <h2 className="font-semibold">{item.name}</h2>
+              <h2 className="font-semibold">{localize(item.name)}</h2>
               <p className="text-gray-500">${item.price}</p>
             </div>
 

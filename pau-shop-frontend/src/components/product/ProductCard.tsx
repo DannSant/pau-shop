@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { type Product } from "../../types/product";
-import { t } from "../../i18n";
+import { localize, t } from "../../i18n";
 interface Props {
   product: Product;
 }
@@ -23,7 +23,7 @@ export default function ProductCard({ product }: Props) {
         {thumbnail ? (
           <img
             src={thumbnail.url}
-            alt={product.name}
+            alt={localize(product.name)}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         ) : (
@@ -37,11 +37,11 @@ export default function ProductCard({ product }: Props) {
       <div className="p-5 flex flex-col flex-1">
         <div className="flex-1">
           <h3 className="text-lg font-semibold mb-2">
-            {product.name}
+            {localize(product.name)}
           </h3>
 
           <p className="text-sm text-gray-500 line-clamp-2">
-            {product.description}
+            {localize(product.description)}
           </p>
         </div>
 

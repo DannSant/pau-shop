@@ -1,8 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { LocalizedText } from "../../types/localized";
 
 export interface CartItem {
   product_id: string;
-  name: string;
+  name: LocalizedText;
   price: number;
   quantity: number;
 }

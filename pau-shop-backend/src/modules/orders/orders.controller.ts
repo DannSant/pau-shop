@@ -7,7 +7,32 @@ import {
 } from "./orders.service";
 import { failure, success } from "../../utils/response";
 
+// Mirrors the checks in the create_order database function, so bad requests
+// get a clear 400 before reaching the database.
+function validateCreateOrder(body: any): string | null {
+  if (typeof body?.shipping_address_id !== "string" || !body.shipping_address_id) {
+    return "shipping_address_id is required";
+  }
+
+  if (!Array.isArray(body.items) || body.items.length === 0) {
+    return "Order must contain at least one item";
+  }
+
+  const validItems = body.items.every(
+    (item: any) =>
+      typeof item?.product_id === "string" &&
+      item.product_id !== "" &&
+      Number.isInteger(item.quantity) &&
+      item.quantity > 0
+  );
+
+  return validItems ? null : "Each item needs a product_id and a positive whole quantity";
+}
+
 export async function createOrderHandler(req: Request, res: Response) {
+  const invalid = validateCreateOrder(req.body);
+  if (invalid) return failure(res, invalid, 400);
+
   try {
     const user = (req as any).user;
     const order = await createOrder(user.id, req.body);

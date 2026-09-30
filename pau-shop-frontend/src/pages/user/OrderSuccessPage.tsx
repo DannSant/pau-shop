@@ -3,7 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { fetchOrderDetail } from "../../features/orders/orderSlice";
-import { locale, t } from "../../i18n";
+import { locale, localize, t } from "../../i18n";
 
 export default function OrderSuccessPage() {
   const [searchParams] = useSearchParams();
@@ -111,14 +111,14 @@ export default function OrderSuccessPage() {
                   {item.image_url ? (
                     <img
                       src={item.image_url}
-                      alt={item.product_name}
+                      alt={localize(item.product_name)}
                       className="w-14 h-14 object-cover rounded-lg"
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-lg bg-white/10" />
                   )}
                   <div>
-                    <p className="font-medium">{item.product_name}</p>
+                    <p className="font-medium">{localize(item.product_name)}</p>
                     <p className="text-white/60">{t.orders.quantity}: {item.quantity}</p>
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { fetchMyOrders } from "../../features/orders/orderSlice";
 import OrderStatusPill from "../orders/OrderStatusPill";
-import { locale, t } from "../../i18n";
+import { locale, localize, t } from "../../i18n";
 
 const SUMMARY_MAX_NAMES = 3;
 
@@ -55,7 +55,7 @@ export default function OrderHistoryTab() {
 
           <p className="text-sm text-white/60 truncate">
             {summarizeItems(
-              (order.order_items ?? []).map((item) => item.product_name)
+              (order.order_items ?? []).map((item) => localize(item.product_name))
             )}
           </p>
         </Link>

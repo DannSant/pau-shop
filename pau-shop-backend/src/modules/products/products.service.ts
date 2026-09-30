@@ -6,6 +6,12 @@ export async function getAllProducts() {
     .from("products")
     .select(`
     *,
+    category:categories (
+      id,
+      slug,
+      name,
+      sort_order
+    ),
     product_images (
       id,
       url,

@@ -54,7 +54,7 @@ export const es = {
     shippingAddress: "Dirección de envío",
     orderSummary: "Resumen del pedido",
     subtotal: "Subtotal",
-    tax: "Impuesto CA (8.5%)",
+    tax: "Impuesto de California (8.5%)",
     importTax: "Impuesto de importación (16%)",
     shipping: "Envío",
     total: "Total",

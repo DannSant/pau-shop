@@ -1,7 +1,8 @@
 import {  useMemo } from "react";
 import ProductCard from "../../components/product/ProductCard";
 import { useSearchParams } from "react-router-dom";
-import { t } from "../../i18n";
+import { localize, t } from "../../i18n";
+import type { Category } from "../../types/product";
 import { useAppSelector } from "../../hooks/useAppSelector";
 
 export default function BrowsePage() {
@@ -12,9 +13,18 @@ export default function BrowsePage() {
   const selectedCategory = searchParams.get("category") || "";
   const selectedFranchise = searchParams.get("franchise") || "";
 
+  // One entry per category slug, in the order set in the database.
   const categories = useMemo(() => {
-    const unique = new Set(products.map((p) => p.category));
-    return Array.from(unique);
+    const bySlug = new Map<string, Category>();
+    products.forEach((p) => {
+      if (p.category) bySlug.set(p.category.slug, p.category);
+    });
+
+    return Array.from(bySlug.values()).sort(
+      (a, b) =>
+        a.sort_order - b.sort_order ||
+        localize(a.name).localeCompare(localize(b.name))
+    );
   }, [products]);
 
   const franchises = useMemo(() => {
@@ -25,7 +35,7 @@ export default function BrowsePage() {
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesCategory = selectedCategory
-        ? p.category === selectedCategory
+        ? p.category?.slug === selectedCategory
         : true;
 
       const matchesFranchise = selectedFranchise
@@ -58,20 +68,20 @@ export default function BrowsePage() {
 
         {categories.map((category) => (
           <button
-            key={category}
+            key={category.slug}
             onClick={() =>
               setSearchParams((prev) => {
                 const params = new URLSearchParams(prev);
-                params.set("category", category);
+                params.set("category", category.slug);
                 return params;
               })
             }
-            className={`block w-full text-left mb-2 hover:text-purple-600 ${selectedCategory === category
+            className={`block w-full text-left mb-2 hover:text-purple-600 ${selectedCategory === category.slug
               ? "text-purple-600 font-semibold"
               : ""
               }`}
           >
-            {category}
+            {localize(category.name)}
           </button>
         ))}
         <div className="mt-8">

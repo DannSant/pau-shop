@@ -1,5 +1,6 @@
 import { api } from "./axios";
 import { request } from "./request";
+import type { LocalizedText } from "../types/localized";
 
 export interface OrderTotals {
   subtotal: number;
@@ -21,7 +22,7 @@ export interface OrderItem {
   id: string;
   order_id: string;
   product_id: string;
-  product_name: string;
+  product_name: LocalizedText;
   unit_price: number;
   quantity: number;
   image_url: string | null;
@@ -39,7 +40,7 @@ export interface Order {
   status: string;
   created_at: string;
   paid_at: string | null;
-  order_items?: { product_name: string; quantity: number }[];
+  order_items?: { product_name: LocalizedText; quantity: number }[];
 }
 
 export interface OrderDetail extends Order {

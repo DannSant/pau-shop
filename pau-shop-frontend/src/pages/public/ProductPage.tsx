@@ -4,7 +4,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import ProductCard from "../../components/product/ProductCard";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { addToCart } from "../../features/cart/cartSlice";
-import { t } from "../../i18n";
+import { localize, t } from "../../i18n";
 import toast from "react-hot-toast";
 
 export default function ProductPage() {
@@ -58,7 +58,7 @@ export default function ProductPage() {
         quantity: 1,
       })
     );
-    toast.success(t.product.addedToCart(product.name));
+    toast.success(t.product.addedToCart(localize(product.name)));
   };
 
   if (loading) return <div>{t.product.loading}</div>;
@@ -73,7 +73,7 @@ export default function ProductPage() {
             <img
               key={img.id}
               src={img.url}
-              alt={product.name}
+              alt={localize(product.name)}
               onClick={() => setSelectedImage(img.url)}
               className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${currentImage === img.url
                 ? "border-purple-600"
@@ -87,7 +87,7 @@ export default function ProductPage() {
         <div className="order-1 lg:order-2">
           <img
             src={currentImage}
-            alt={product.name}
+            alt={localize(product.name)}
             className="w-full rounded-2xl shadow-md"
           />
         </div>
@@ -95,11 +95,11 @@ export default function ProductPage() {
         {/* RIGHT - Details */}
         <div className="order-3 bg-white rounded-2xl shadow-lg p-8 h-fit">
           <h1 className="text-3xl font-bold mb-4">
-            {product.name}
+            {localize(product.name)}
           </h1>
 
           <p className="text-gray-600 mb-6">
-            {product.description}
+            {localize(product.description)}
           </p>
 
           <div className="mb-6">

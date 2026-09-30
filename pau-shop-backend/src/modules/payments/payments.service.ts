@@ -1,5 +1,6 @@
 import { stripe } from "../../lib/stripe";
 import { supabase } from "../../config/supabase";
+import { localize } from "../../utils/localized";
 
 export async function createCheckoutSession(orderId: string, userId: string) {
 
@@ -12,24 +13,25 @@ export async function createCheckoutSession(orderId: string, userId: string) {
       order_items (
         quantity,
         unit_price,
-        products (
-          name
-        )
+        product_name
       )
     `)
     .eq("id", orderId)
-    .single();
+    .eq("user_id", userId)
+    .maybeSingle();
 
+  // Same response whether the order doesn't exist or belongs to someone else.
   if (error || !order) {
     throw new Error("Order not found");
   }
 
-  // Build Stripe line items
+  // Build Stripe line items from the names saved on the order (what the
+  // customer bought), in the default language since Stripe needs a string.
   const line_items = order.order_items.map((item: any) => ({
     price_data: {
       currency: "mxn",
       product_data: {
-        name: item.products.name
+        name: localize(item.product_name)
       },
       unit_amount: Math.round(item.unit_price * 100)
     },
