@@ -28,6 +28,8 @@ export interface OrderItem {
   image_url: string | null;
 }
 
+export type ShippingStatus = "pending" | "shipped" | "arrived";
+
 export interface Order {
   id: string;
   user_id: string;
@@ -38,6 +40,7 @@ export interface Order {
   shipping_fee: number;
   total_amount: number;
   status: string;
+  shipping_status: ShippingStatus;
   created_at: string;
   paid_at: string | null;
   order_items?: { product_name: LocalizedText; quantity: number }[];
@@ -68,5 +71,15 @@ export const getOrderDetail = async (orderId: string) => {
 export const getMyOrders = async () => {
   return request<Order[]>(
     api.get("/orders")
+  );
+};
+
+// Admin only (the backend checks the role).
+export const updateShippingStatus = async (
+  orderId: string,
+  shippingStatus: ShippingStatus
+) => {
+  return request<Order>(
+    api.patch(`/orders/${orderId}/shipping-status`, { shipping_status: shippingStatus })
   );
 };

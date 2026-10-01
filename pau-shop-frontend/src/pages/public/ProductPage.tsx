@@ -4,6 +4,9 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import ProductCard from "../../components/product/ProductCard";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { addToCart } from "../../features/cart/cartSlice";
+import { fetchProducts } from "../../features/products/productsSlice";
+import ReviewsSection from "../../components/reviews/ReviewsSection";
+import { StarRating } from "../../components/reviews/StarRating";
 import { localize, t } from "../../i18n";
 import toast from "react-hot-toast";
 
@@ -94,9 +97,22 @@ export default function ProductPage() {
 
         {/* RIGHT - Details */}
         <div className="order-3 bg-white rounded-2xl shadow-lg p-8 h-fit">
-          <h1 className="text-3xl font-bold mb-4">
+          <h1 className="text-3xl font-bold mb-2">
             {localize(product.name)}
           </h1>
+
+          <a href="#reviews" className="inline-flex items-center gap-2 mb-4 text-sm text-gray-500 hover:text-purple-600">
+            {product.rating && product.rating.count > 0 && product.rating.average !== null ? (
+              <>
+                <StarRating value={product.rating.average} size="sm" />
+                <span>
+                  {product.rating.average.toFixed(1)} · {t.reviews.count(product.rating.count)}
+                </span>
+              </>
+            ) : (
+              <span>{t.reviews.noReviews}</span>
+            )}
+          </a>
 
           <p className="text-gray-600 mb-6">
             {localize(product.description)}
@@ -152,6 +168,9 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
+
+      {/* Refreshing the store's products keeps the rating above (and on cards) in sync. */}
+      <ReviewsSection productId={product.id} onReviewsChanged={() => dispatch(fetchProducts())} />
 
       {/* Similar Products */}
       {similarProducts.length > 0 && (

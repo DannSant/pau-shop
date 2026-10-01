@@ -2,9 +2,13 @@ import { Request, Response } from "express";
 import {
   calculateOrderTotal,
   createOrder,
+  getAllOrders,
   getMyOrders,
-  getOrderDetail
+  getOrderDetail,
+  getOrderPaymentStatus,
+  setShippingStatus
 } from "./orders.service";
+import { SHIPPING_STATUSES, ShippingStatus } from "./orders.types";
 import { failure, success } from "../../utils/response";
 
 // Mirrors the checks in the create_order database function, so bad requests
@@ -69,5 +73,54 @@ export async function calculateTotalHandler(req: Request, res: Response) {
     return success(res,order);
   } catch {
     return failure(res,"Order not found",404)
+  }
+}
+
+// Admin only. Any of the three values is allowed (so mistakes can be undone),
+// but an order can't be shipped before it's paid.
+export async function updateShippingStatusHandler(req: Request, res: Response) {
+  const shippingStatus = req.body?.shipping_status;
+
+  if (!SHIPPING_STATUSES.includes(shippingStatus)) {
+    return failure(res, `shipping_status must be one of: ${SHIPPING_STATUSES.join(", ")}`, 400);
+  }
+
+  try {
+    const paymentStatus = await getOrderPaymentStatus(req.params.id);
+
+    if (paymentStatus === null) {
+      return failure(res, "Order not found", 404);
+    }
+
+    if (shippingStatus !== "pending" && paymentStatus !== "paid") {
+      return failure(res, "Only paid orders can be shipped", 400);
+    }
+
+    const order = await setShippingStatus(req.params.id, shippingStatus as ShippingStatus);
+    return success(res, order);
+  } catch {
+    return failure(res, "Failed to update shipping status", 500);
+  }
+}
+
+const PAYMENT_STATUSES = ["pending", "paid"];
+
+// Admin only. Optional filters: ?shipping_status=...&payment_status=...
+export async function listAllOrdersHandler(req: Request, res: Response) {
+  const shippingStatus = req.query.shipping_status as string | undefined;
+  const paymentStatus = req.query.payment_status as string | undefined;
+
+  if (shippingStatus && !SHIPPING_STATUSES.includes(shippingStatus as ShippingStatus)) {
+    return failure(res, "Invalid shipping_status filter", 400);
+  }
+  if (paymentStatus && !PAYMENT_STATUSES.includes(paymentStatus)) {
+    return failure(res, "Invalid payment_status filter", 400);
+  }
+
+  try {
+    const orders = await getAllOrders({ shippingStatus, paymentStatus });
+    return success(res, orders);
+  } catch {
+    return failure(res, "Failed to fetch orders", 500);
   }
 }

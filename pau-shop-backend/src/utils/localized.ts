@@ -15,6 +15,17 @@ export function isLocalizedText(value: unknown): value is LocalizedText {
   );
 }
 
+// Trims every language and drops blank optional ones ({ es: "a", en: "" } -> { es: "a" }).
+export function cleanLocalizedText(text: LocalizedText): LocalizedText {
+  const cleaned: LocalizedText = { es: text.es.trim() };
+
+  for (const [lang, value] of Object.entries(text)) {
+    if (lang !== "es" && value.trim() !== "") cleaned[lang] = value.trim();
+  }
+
+  return cleaned;
+}
+
 export function localize(text: LocalizedText | null | undefined, lang = "es") {
   if (!text) return "";
   return text[lang] || text.es;

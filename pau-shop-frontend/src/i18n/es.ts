@@ -6,7 +6,8 @@ export const es = {
     browse: "Explorar",
     cart: "Carrito",
     login: "Iniciar sesión",
-    profile: "Perfil"
+    profile: "Perfil",
+    admin: "Admin"
   },
   home: {
     title: "Bienvenido a PauShop",
@@ -156,12 +157,22 @@ export const es = {
     items: "Artículos",
     andMore: (n: number) => `y ${n} más`,
     date: "Fecha",
+    // Payment status (orders.status)
     status: {
-      pending: "Pendiente",
-      paid: "Pagado",
+      pending: "Pago pendiente",
+      paid: "Pagado"
+    } as Record<string, string>,
+    // Shipping status (orders.shipping_status)
+    shippingStatuses: {
+      pending: "Por enviar",
       shipped: "Enviado",
-      delivered: "Entregado",
-      cancelled: "Cancelado"
+      arrived: "Entregado"
+    } as Record<string, string>,
+    shippingDescriptions: {
+      awaitingPayment: "Enviaremos tu pedido en cuanto se confirme el pago.",
+      pending: "Estamos preparando tu pedido para enviarlo.",
+      shipped: "Tu pedido va en camino.",
+      arrived: "Tu pedido fue entregado."
     } as Record<string, string>,
     detailTitle: "Detalle del pedido",
     orderNumber: "Número de pedido",
@@ -172,9 +183,129 @@ export const es = {
     shipping: "Envío",
     total: "Total",
     shippingStatus: "Estado del envío",
-    comingSoon: "Disponible próximamente",
     back: "Volver al historial",
     detailLoading: "Cargando tu pedido...",
     notFound: "No encontramos este pedido"
+  },
+  admin: {
+    title: "Administración",
+    tabProducts: "Productos",
+    tabCategories: "Categorías",
+    tabOrders: "Pedidos",
+    loading: "Cargando...",
+    loadError: "No pudimos cargar los datos.",
+
+    // Products list
+    newProduct: "Nuevo producto",
+    active: "Activos",
+    deleted: "Eliminados",
+    noProducts: "No hay productos.",
+    noDeleted: "No hay productos eliminados.",
+    edit: "Editar",
+    delete: "Eliminar",
+    restore: "Restaurar",
+    confirmDelete: (name: string) =>
+      `¿Eliminar "${name}"? Dejará de mostrarse en la tienda y no se podrá comprar. Podrás restaurarlo después.`,
+    deletedToast: "Producto eliminado",
+    restoredToast: "Producto restaurado",
+    actionError: "No pudimos completar la acción.",
+    price: "Precio",
+    offerPrice: "Precio de oferta",
+    stock: "Stock",
+    category: "Categoría",
+    franchise: "Franquicia",
+    noCategory: "Sin categoría",
+
+    // Product form
+    newProductTitle: "Nuevo producto",
+    editProductTitle: "Editar producto",
+    nameEs: "Nombre (español)",
+    nameEn: "Nombre (inglés, opcional)",
+    descriptionEs: "Descripción (español)",
+    descriptionEn: "Descripción (inglés, opcional)",
+    offerPriceHint: "Déjalo vacío si no hay oferta.",
+    offerTooHigh: "El precio de oferta debe ser menor que el precio.",
+    save: "Guardar",
+    saving: "Guardando...",
+    backToProducts: "Volver a productos",
+    created: "Producto creado. Ahora puedes agregar imágenes.",
+    saved: "Cambios guardados",
+    saveError: "No pudimos guardar el producto.",
+    productNotFound: "No encontramos este producto.",
+    deletedNotice: "Este producto está eliminado y no se muestra en la tienda.",
+
+    // Product images
+    images: "Imágenes",
+    addImages: "Agregar imágenes",
+    uploading: "Subiendo...",
+    imagesHint: "JPG, PNG, WEBP, GIF o AVIF, máximo 5 MB cada una.",
+    noImages: "Este producto aún no tiene imágenes.",
+    mainImage: "Principal",
+    setMain: "Hacer principal",
+    deleteImage: "Eliminar",
+    confirmDeleteImage: "¿Eliminar esta imagen?",
+    uploadError: "No pudimos subir las imágenes.",
+    imageError: "No pudimos actualizar la imagen.",
+    imagesAfterSave: "Guarda el producto para poder agregar imágenes.",
+
+    // Categories
+    newCategory: "Nueva categoría",
+    categoryNameEs: "Nombre (español)",
+    categoryNameEn: "Nombre (inglés, opcional)",
+    sortOrder: "Orden",
+    add: "Agregar",
+    noCategories: "No hay categorías.",
+    categoryCreated: "Categoría creada",
+    categorySaved: "Categoría actualizada",
+    categoryExists: "Ya existe una categoría con ese nombre.",
+    categoryError: "No pudimos guardar la categoría.",
+    slugNote: "El identificador que aparece en las URLs no cambia al renombrar una categoría.",
+
+    // Orders
+    shippingFilter: "Envío",
+    paymentFilter: "Pago",
+    allStatuses: "Todos",
+    noOrders: "No hay pedidos.",
+    customer: "Cliente",
+    shippingAddress: "Dirección de envío",
+    items: "Artículos",
+    showDetails: "Ver detalles",
+    hideDetails: "Ocultar detalles",
+    shippingUpdated: "Estado de envío actualizado",
+    shippingError: "No pudimos actualizar el estado de envío.",
+    unpaidCannotShip: "Se podrá enviar cuando el pedido esté pagado."
+  },
+  reviews: {
+    title: "Reseñas",
+    noReviews: "No hay reseñas",
+    noReviewsYet: "Este producto aún no tiene reseñas.",
+    count: (n: number) => (n === 1 ? "1 reseña" : `${n} reseñas`),
+    outOfFive: "de 5",
+    starLabel: (n: number) => (n === 1 ? "1 estrella" : `${n} estrellas`),
+    writeTitle: "Escribe una reseña",
+    yourReview: "Tu reseña",
+    score: "Calificación",
+    comment: "Comentario (opcional)",
+    commentPlaceholder: "¿Qué te pareció el producto?",
+    characters: (n: number, max: number) => `${n}/${max}`,
+    submit: "Publicar reseña",
+    update: "Guardar cambios",
+    saving: "Guardando...",
+    edit: "Editar",
+    delete: "Eliminar",
+    cancel: "Cancelar",
+    confirmDelete: "¿Eliminar tu reseña?",
+    saved: "¡Gracias por tu reseña!",
+    updated: "Reseña actualizada",
+    deleted: "Reseña eliminada",
+    saveError: "No pudimos guardar tu reseña.",
+    deleteError: "No pudimos eliminar tu reseña.",
+    loadError: "No pudimos cargar las reseñas.",
+    scoreRequired: "Elige una calificación de 1 a 5 estrellas.",
+    loginToReview: "para dejar una reseña.",
+    loginLink: "Inicia sesión",
+    onlyBuyers: "Podrás dejar una reseña cuando recibas este producto.",
+    edited: "(editada)",
+    anonymous: "Cliente"
   }
 };

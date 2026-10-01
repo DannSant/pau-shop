@@ -46,6 +46,11 @@ export default function Navbar() {
 
           {user ? (
             <>
+              {user.role === "admin" && (
+                <Link to="/admin" className="hover:text-purple-600">
+                  {t.navbar.admin}
+                </Link>
+              )}
               <Link to="/profile" className="hover:text-purple-600">
                 {t.navbar.profile}
               </Link>

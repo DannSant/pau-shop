@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { type Product } from "../../types/product";
 import { localize, t } from "../../i18n";
+import { StarRating } from "../reviews/StarRating";
 interface Props {
   product: Product;
 }
@@ -39,6 +40,13 @@ export default function ProductCard({ product }: Props) {
           <h3 className="text-lg font-semibold mb-2">
             {localize(product.name)}
           </h3>
+
+          {product.rating && product.rating.count > 0 && product.rating.average !== null && (
+            <div className="flex items-center gap-1 mb-2 text-sm text-gray-500">
+              <StarRating value={product.rating.average} size="sm" />
+              <span>({product.rating.count})</span>
+            </div>
+          )}
 
           <p className="text-sm text-gray-500 line-clamp-2">
             {localize(product.description)}

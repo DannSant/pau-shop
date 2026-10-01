@@ -15,9 +15,19 @@ export interface Product {
   offer_price: number | null;
   stock: number;
   category: Category | null;
+  category_id?: string | null;
   franchise: string;
+  // Set when an admin deletes the product (only returned to admins).
+  deleted_at?: string | null;
   created_at?: string;
   product_images: ProductImage[];
+  // Review summary (included in the store listing).
+  rating?: ReviewStats;
+}
+
+export interface ReviewStats {
+  average: number | null;
+  count: number;
 }
 
 export interface ProductImage {

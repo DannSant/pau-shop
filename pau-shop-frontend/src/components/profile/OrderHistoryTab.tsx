@@ -49,6 +49,9 @@ export default function OrderHistoryTab() {
             </p>
             <div className="flex items-center gap-4">
               <OrderStatusPill status={order.status} />
+              {order.status === "paid" && (
+                <OrderStatusPill kind="shipping" status={order.shipping_status} />
+              )}
               <p className="font-bold">${order.total_amount.toFixed(2)}</p>
             </div>
           </div>

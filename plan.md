@@ -53,42 +53,32 @@ Online store for a California-based client who buys items in the US and resells 
 
 ---
 
-# ⏳ Pending from the last session
+# ⏳ Pending
 
-1. **Run `supabase/migrations/20260930000100_harden_create_order.sql`** in the Supabase SQL Editor, if not done yet. Do **not** re-run `20260930000000_localized_product_text.sql`; it's already applied.
-2. **After that:** check the pages in the browser against the real data, and do a Stripe test-mode checkout, to confirm `create_order` still works with the service key only.
+Nothing pending. All migrations up to `20261001000200_review_rules.sql` are applied, and a real order through `create_order` plus a Stripe test-mode checkout were verified.
 
 ---
 
 # 🔜 Next session
 
-## 1. Shipping status
-- New `orders.shipping_status` column: `pending` → `shipped` → `arrived`. It's separate from the payment `status`, which stays `pending`/`paid`. Migration default is `pending`, with a check constraint on the allowed values.
-- Show it on the order details page (the "Estado del envío" section is already there as a placeholder) and as a pill in the order history.
-- Spanish labels in `es.ts`, e.g. `orders.shippingStatus.{pending, shipped, arrived}`.
+## 1. Shipping status ✅ done
+- `orders.shipping_status` (`pending` → `shipped` → `arrived`), separate from the payment `status`.
+- Admin-only `PATCH /orders/:id/shipping-status`: unpaid orders can't be shipped; going back to `pending` is allowed. The frontend helper is `updateShippingStatus()` in `api/orders.ts`, ready for the admin page.
+- Shown as a pill on the order details page (with a short description) and in the order history (paid orders only).
 
-## 2. Admin page (only for `role = 'admin'`)
-- Frontend: enable the admin routes in `AppRouter.tsx`. `AdminRoute.tsx` already exists and the routes are commented out. Show an "Admin" navbar link only to admins.
-- **Products:**
-  - create, update and **soft delete**: add a `products.deleted_at` column; public listings hide deleted products, while past orders still reference them.
-  - backend endpoints already exist behind `requireAdmin`: `POST/PUT/DELETE /products`. `DELETE` must become the soft delete.
-  - the form edits `name`/`description` per language (`es` required, `en` optional), plus category, franchise, price, offer price and stock.
-  - product images have endpoints already (`/products/:id/images`).
-- **Orders:**
-  - list all orders and update their shipping status
-  - needs a new admin endpoint, e.g. `PATCH /orders/:id/shipping-status`, restricted by `requireAdmin`.
-- Admins also need their `role` read from `user_data`: today `state.auth.user.role` comes from Supabase and is always `authenticated`, not `admin`.
+## 2. Admin page ✅ done
+- `/admin` (admins only; "Admin" link in the navbar). The role is read from `user_data` and `AdminRoute` waits for it to load.
+- **Productos:** create/edit with Spanish + optional English text, soft delete (`products.deleted_at`) and restore, image upload to the `product-images` bucket (max 10 × 5 MB), main image, image delete (also removes the file). Deleted products are hidden from the store and `create_order` rejects them.
+- **Categorías:** create, rename, reorder; the slug never changes.
+- **Pedidos:** all orders with customer contact, address and items; filters by shipping/payment status; shipping-status dropdown (unpaid orders can't ship).
+- Backend: `/products/admin`, `/products/:id/restore`, `/products/:id/images` (multipart, `multer`), `/categories`, `/orders/admin`. Product create/update only accept known fields.
 
-## 3. Reviews
-- A `reviews` table and endpoints already exist:
-  - `GET/POST/PUT/DELETE /products/:id/reviews`, one review per user per product (upsert)
-  - `score` between 1 and 5, plus a `comment`.
-- **Missing:** only allow a review if the user has **purchased** the product, meaning a `paid` order containing it. Check this in the backend, not just the UI.
-- Product page:
-  - list all reviews: name, score, comment, date
-  - form to write or edit your own review, shown only to eligible users
-  - average score with review count, or "No hay reseñas" when there are none.
-- Spanish text in `es.ts`.
+## 3. Reviews ✅ done
+- Only customers with a **paid** order containing the product that's marked **Entregado** can review it (checked by the backend; public-key writes are blocked by RLS).
+- One review per customer per product: 1–5 stars, optional comment (max 1000 characters); editing marks it "(editada)"; customers can delete their own.
+- Public list shows "Daniel S." and never the `user_id`. Deleted products can't be reviewed.
+- Product page: average + count under the title (or "No hay reseñas"), a reviews section with summary, star-picker form and list. Product cards show small stars when a product has reviews.
+- Database: `20261001000200_review_rules.sql` (score/comment checks, unique per user+product, `updated_at`, `product_review_stats` view). Endpoints: `GET /products/:id/reviews`, `GET /products/:id/reviews/me`, `PUT`/`POST`/`DELETE /products/:id/reviews`.
 
 ---
 
@@ -99,3 +89,4 @@ Online store for a California-based client who buys items in the US and resells 
 - Stock is reduced when the order is created, not when it's paid. Unpaid orders keep their stock reserved forever; consider releasing it after a timeout or reducing stock only on payment.
 - Search page (`/search` is still a placeholder).
 - Persist the cart across page reloads.
+- Admin moderation of reviews (hide or delete inappropriate ones).

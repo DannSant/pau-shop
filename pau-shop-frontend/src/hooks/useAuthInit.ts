@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { supabase } from "../lib/supabase";
-import { logout, setUser } from "../features/auth/authSlice";
+import { logout, setRole, setUser } from "../features/auth/authSlice";
 import { ensureUserProfile } from "../features/auth/ensureUserProfile";
 
 export default function useAuthInit() {
@@ -22,16 +22,13 @@ export default function useAuthInit() {
 
       localStorage.setItem("token", session.access_token);
 
-      dispatch(
-        setUser({
-          id: user.id,
-          email: user.email ?? "",
-          role: user.role ?? "user",
-        })
-      );
+      dispatch(setUser({ id: user.id, email: user.email ?? "" }));
 
       if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
-        ensureUserProfile(user);
+        // The backend still enforces the role; this only drives the UI.
+        ensureUserProfile(user).then((profile) => {
+          dispatch(setRole({ userId: user.id, role: profile?.role ?? "user" }));
+        });
       }
     });
 

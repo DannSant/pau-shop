@@ -5,6 +5,7 @@ import {
   addImageHandler,
   deleteImageHandler,
   listImagesHandler,
+  parseImageUpload,
   setThumbnailHandler
 } from "./product-images.controller";
 
@@ -12,7 +13,8 @@ const router = Router({ mergeParams: true });
 
 router.get("/", listImagesHandler);
 
-router.post("/", requireAuth, requireAdmin, addImageHandler);
+// multipart/form-data with one or more "images" files
+router.post("/", requireAuth, requireAdmin, parseImageUpload, addImageHandler);
 
 router.delete(
   "/:imageId",

@@ -1,5 +1,5 @@
 import { supabase } from "../../config/supabase";
-import { CreateOrderDTO } from "./orders.types";
+import { CreateOrderDTO, ShippingStatus } from "./orders.types";
 
 export async function createOrder(userId: string, input: CreateOrderDTO) {
 
@@ -170,6 +170,58 @@ export async function getOrderDetail(userId: string, orderId: string | string[])
       return { ...item, image_url: image?.url ?? null };
     })
   };
+}
+
+// Admin: every order, newest first, with items, shipping address and customer.
+export async function getAllOrders(filters: { shippingStatus?: string; paymentStatus?: string }) {
+  let query = supabase
+    .from("orders")
+    .select("*, order_items(product_name, quantity, unit_price), shipping_address:shipping_addresses(*)")
+    .order("created_at", { ascending: false });
+
+  if (filters.shippingStatus) query = query.eq("shipping_status", filters.shippingStatus);
+  if (filters.paymentStatus) query = query.eq("status", filters.paymentStatus);
+
+  const { data: orders, error } = await query;
+  if (error) throw error;
+
+  // orders.user_id isn't linked to user_data, so customers are fetched separately.
+  const userIds = [...new Set(orders.map((order) => order.user_id))];
+  const { data: customers, error: customersError } = userIds.length
+    ? await supabase.from("user_data").select("id, name, email, phone").in("id", userIds)
+    : { data: [], error: null };
+
+  if (customersError) throw customersError;
+
+  const customersById = new Map((customers ?? []).map((c) => [c.id, c]));
+  return orders.map((order) => ({ ...order, customer: customersById.get(order.user_id) ?? null }));
+}
+
+// Payment status of any order (admin use); null if the order doesn't exist.
+export async function getOrderPaymentStatus(orderId: string | string[]) {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("status")
+    .eq("id", orderId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data?.status ?? null;
+}
+
+export async function setShippingStatus(
+  orderId: string | string[],
+  shippingStatus: ShippingStatus
+) {
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ shipping_status: shippingStatus })
+    .eq("id", orderId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 
 export async function calculateOrderTotal(subtotal: number) {

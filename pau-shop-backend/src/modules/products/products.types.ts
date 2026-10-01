@@ -10,25 +10,25 @@ export interface Category {
 export interface Product {
   id: string;
   name: LocalizedText;
-  description?: LocalizedText | null;
+  description: LocalizedText | null;
   price: number;
-  offer_price?: number | null;
+  offer_price: number | null;
   stock: number;
-  category_id?: string | null;
+  category_id: string | null;
   category?: Category | null;
-  franchise?: string;
+  franchise: string | null;
+  deleted_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface CreateProductDTO {
+// The only fields an admin can set on a product.
+export interface ProductInput {
   name: LocalizedText;
-  description?: LocalizedText | null;
+  description: LocalizedText | null;
   price: number;
-  offer_price?: number;
-  stock?: number;
-  category_id?: string | null;
-  franchise?: string;
+  offer_price: number | null;
+  stock: number;
+  category_id: string | null;
+  franchise: string | null;
 }
-
-export interface UpdateProductDTO extends Partial<CreateProductDTO> {}

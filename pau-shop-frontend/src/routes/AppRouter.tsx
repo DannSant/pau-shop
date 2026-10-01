@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
-// import AdminRoute from "./AdminRoute"; // re-enable with the admin routes below
+import AdminRoute from "./AdminRoute";
 
 import MainLayout from "../components/layout/MainLayout";
 
@@ -19,6 +19,8 @@ import OrderSuccessPage from "../pages/user/OrderSuccessPage";
 import OrderDetailsPage from "../pages/user/OrderDetailsPage";
 
 import CartPage from "../pages/user/CartPage";
+import AdminPage from "../pages/admin/AdminPage";
+import AdminProductFormPage from "../pages/admin/AdminProductFormPage";
 import useAuthInit from "../hooks/useAuthInit";
 
 export default function AppRouter() {
@@ -49,10 +51,11 @@ export default function AppRouter() {
             <Route path="/cart" element={<CartPage />} />
           </Route>
           {/* ADMIN ROUTES */}
-         {/*  <Route element={<AdminRoute />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/products" element={<AdminProductsPage />} />
-          </Route> */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/products/new" element={<AdminProductFormPage />} />
+            <Route path="/admin/products/:id" element={<AdminProductFormPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,18 +1,22 @@
 import { getMe } from "../../api/users";
+import type { UserProfile } from "../../types/user";
 
-// Users already checked in this tab, so repeated auth events don't re-hit the API.
-const checkedUserIds = new Set<string>();
+// One request per user per tab, so repeated auth events don't re-hit the API.
+const profiles = new Map<string, Promise<UserProfile | null>>();
 
 // GET /users/me creates the user_data row from the sign-up metadata if it's
-// missing, so calling it once after sign-in is enough.
-export async function ensureUserProfile(user: { id: string }) {
-  if (checkedUserIds.has(user.id)) return;
-  checkedUserIds.add(user.id);
+// missing, and returns the profile (including the role).
+export function ensureUserProfile(user: { id: string }): Promise<UserProfile | null> {
+  let profile = profiles.get(user.id);
 
-  try {
-    await getMe();
-  } catch (err) {
-    checkedUserIds.delete(user.id);
-    console.error("Failed to load user profile", err);
+  if (!profile) {
+    profile = getMe().catch((err) => {
+      profiles.delete(user.id);
+      console.error("Failed to load user profile", err);
+      return null;
+    });
+    profiles.set(user.id, profile);
   }
+
+  return profile;
 }

@@ -126,8 +126,15 @@ export default function OrderDetailsPage() {
       </div>
 
       <div className="bg-white/10 backdrop-blur rounded-2xl p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-2">{t.orders.shippingStatus}</h2>
-        <p className="text-white/60">{t.orders.comingSoon}</p>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <h2 className="text-xl font-semibold">{t.orders.shippingStatus}</h2>
+          <OrderStatusPill kind="shipping" status={order.shipping_status} />
+        </div>
+        <p className="text-white/60">
+          {order.status !== "paid"
+            ? t.orders.shippingDescriptions.awaitingPayment
+            : t.orders.shippingDescriptions[order.shipping_status]}
+        </p>
       </div>
 
       <div className="text-center">{backLink}</div>

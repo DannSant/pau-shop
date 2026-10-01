@@ -2,6 +2,7 @@
 import { Router } from "express";
 
 import productsRouter from "./modules/products/products.routes";
+import categoriesRouter from "./modules/categories/categories.routes";
 import usersRouter from "./modules/users/users.routes";
 import addressesRouter from "./modules/addresses/addresses.routes";
 import ordersRouter from "./modules/orders/orders.routes";
@@ -13,6 +14,7 @@ import webhooksRouter from "./modules/webhooks/webhooks.routes";
 const router = Router();
 
 router.use("/products", productsRouter);
+router.use("/categories", categoriesRouter);
 router.use("/users", usersRouter);
 router.use("/addresses", addressesRouter);
 router.use("/orders", ordersRouter);

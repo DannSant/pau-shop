@@ -5,7 +5,16 @@ import { supabase } from "../../lib/supabase";
 interface AuthUser {
   id: string;
   email: string;
-  role: string;
+  // From user_data ("user" | "admin"); null until the profile has loaded.
+  role: string | null;
+}
+
+type SessionUser = Pick<AuthUser, "id" | "email">;
+
+// Session updates (login, token refresh, other tabs) keep the role already
+// loaded for the same user; the role itself only comes from setRole.
+function withKnownRole(current: AuthUser | null, next: SessionUser): AuthUser {
+  return { ...next, role: current?.id === next.id ? current.role : null };
 }
 
 interface AuthState {
@@ -35,11 +44,7 @@ export const loginUser = createAsyncThunk(
     const data = await login(email, password);
 
     return {
-       user: {
-        id: data.user.id,
-        email: data.user.email ?? "",
-        role:data.user.role ?? "user",
-      },
+      user: { id: data.user.id, email: data.user.email ?? "" },
       token: data.session.access_token,
     };
   }
@@ -65,11 +70,7 @@ export const signUpUser = createAsyncThunk(
     // SIGNED_IN listener in useAuthInit.
     return {
       confirmationRequired: false as const,
-      user: {
-        id: data.user.id,
-        email: data.user.email ?? "",
-        role: data.user.role ?? "user",
-      },
+      user: { id: data.user.id, email: data.user.email ?? "" },
       token: data.session.access_token,
     };
   }
@@ -88,9 +89,15 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<AuthUser | null>) {
-      state.user = action.payload;
+    setUser(state, action: PayloadAction<SessionUser>) {
+      state.user = withKnownRole(state.user, action.payload);
       state.isAuthenticated = true;
+    },
+    // Ignored if another user has signed in since the profile was requested.
+    setRole(state, action: PayloadAction<{ userId: string; role: string }>) {
+      if (state.user?.id === action.payload.userId) {
+        state.user.role = action.payload.role;
+      }
     },   
     clearAuthError(state) {
       state.error = null;
@@ -115,7 +122,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.user = action.payload.user;
+        state.user = withKnownRole(state.user, action.payload.user);
         state.token = action.payload.token;
         state.isAuthenticated = true;
 
@@ -141,7 +148,7 @@ const authSlice = createSlice({
           return;
         }
 
-        state.user = action.payload.user;
+        state.user = withKnownRole(state.user, action.payload.user);
         state.token = action.payload.token;
         state.isAuthenticated = true;
 
@@ -155,6 +162,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setUser, clearAuthError } = authSlice.actions;
+export const { logout, setUser, setRole, clearAuthError } = authSlice.actions;
 
 export default authSlice.reducer;
