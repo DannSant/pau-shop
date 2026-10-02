@@ -3,6 +3,7 @@ import { useAppSelector } from "../../hooks/useAppSelector";
 import { t } from "../../i18n";
 import { ShoppingCart } from "lucide-react";
 import LogoutButton from "../auth/LogoutButton";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 
 export default function Navbar() {
@@ -18,15 +19,15 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 py-4 flex flex-wrap justify-between items-center gap-x-3 gap-y-2">
         <Link
           to="/"
-          className="text-xl font-bold text-purple-600"
+          className="text-lg sm:text-xl font-bold text-purple-600 whitespace-nowrap"
         >
           {t.navbar.brand}
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 sm:gap-x-6 text-sm sm:text-base whitespace-nowrap">
           <Link to="/browse" className="hover:text-purple-600">
             {t.navbar.browse}
           </Link>
@@ -62,6 +63,7 @@ export default function Navbar() {
             </Link>
           )}
 
+          <LanguageSwitcher />
         </div>
       </div>
     </nav>

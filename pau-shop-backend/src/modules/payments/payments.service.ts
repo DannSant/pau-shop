@@ -2,7 +2,11 @@ import { stripe } from "../../lib/stripe";
 import { supabase } from "../../config/supabase";
 import { localize } from "../../utils/localized";
 
-export async function createCheckoutSession(orderId: string, userId: string) {
+export async function createCheckoutSession(
+  orderId: string,
+  userId: string,
+  language: "es" | "en" = "es"
+) {
 
   // Fetch order
   const { data: order, error } = await supabase
@@ -26,12 +30,12 @@ export async function createCheckoutSession(orderId: string, userId: string) {
   }
 
   // Build Stripe line items from the names saved on the order (what the
-  // customer bought), in the default language since Stripe needs a string.
+  // customer bought), in the customer's language since Stripe needs a string.
   const line_items = order.order_items.map((item: any) => ({
     price_data: {
       currency: "mxn",
       product_data: {
-        name: localize(item.product_name)
+        name: localize(item.product_name, language)
       },
       unit_amount: Math.round(item.unit_price * 100)
     },
@@ -44,6 +48,9 @@ export async function createCheckoutSession(orderId: string, userId: string) {
     line_items,
 
     mode: "payment",
+
+    // Stripe's page in the store's language (es-419: Latin American Spanish).
+    locale: language === "en" ? "en" : "es-419",
 
     success_url: `${process.env.FRONTEND_URL}/order-success?order_id=${orderId}`,
     cancel_url: `${process.env.FRONTEND_URL}/checkout`,

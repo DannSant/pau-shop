@@ -9,7 +9,7 @@ import MainLayout from "../components/layout/MainLayout";
 import HomePage from "../pages/public/HomePage";
 import BrowsePage from "../pages/public/BrowsePage";
 import ProductPage from "../pages/public/ProductPage";
-import SearchPage from "../pages/public/SearchPage";
+import NotFoundPage from "../pages/public/NotFoundPage";
 
 import LoginPage from "../pages/auth/LoginPage";
 import SignupPage from "../pages/auth/SignupPage";
@@ -37,7 +37,6 @@ export default function AppRouter() {
             <Route path="/" element={<HomePage />} />
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/products/:id" element={<ProductPage />} />
-            <Route path="/search" element={<SearchPage />} />
 
             {/* GUEST-ONLY ROUTES */}
             <Route element={<GuestRoute />}>
@@ -61,6 +60,9 @@ export default function AppRouter() {
               <Route path="/admin/products/new" element={<AdminProductFormPage />} />
               <Route path="/admin/products/:id" element={<AdminProductFormPage />} />
             </Route>
+
+            {/* Any other address */}
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
       </Routes>

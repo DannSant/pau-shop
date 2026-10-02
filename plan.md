@@ -1,6 +1,6 @@
-# Pau Shop – Roadmap
+# Polillita Shop – Roadmap
 
-Online store for a California-based client who buys items in the US and resells them in Mexico. The UI is in Spanish, prices are in MXN, and payments go through Stripe.
+Online store (shown to customers as **Polillita Shop**; the repo and folders keep the `pau-shop` name) for a California-based client who buys items in the US and resells them in Mexico. The UI is in Spanish, prices are in MXN, and payments go through Stripe.
 
 - **Frontend:** `pau-shop-frontend/`, React + Redux Toolkit + Tailwind (Vite).
 - **Backend:** `pau-shop-backend/`, Express 5 + TypeScript, calls Supabase with the service key.
@@ -12,11 +12,11 @@ Online store for a California-based client who buys items in the US and resells 
 
 ## Catalog
 - Home page with featured products (products that have an offer price).
-- Browse page with category and franchise filters (`?category=<slug>&franchise=<name>`).
+- Browse page with category and franchise filters (`?category=<slug>&franchise=<name>`) and a search bar that filters as you type by name and description (ignores case and accents; kept in the URL as `?q=`). The separate `/search` page was removed.
 - Product page: image gallery, price/offer price, stock, add to cart, similar products (same franchise).
 
 ## Cart & checkout
-- Cart page with quantity controls and stock check (cart lives in Redux, not persisted).
+- Cart page with quantity controls and stock check. The cart is saved in localStorage and emptied on the order success page.
 - Checkout page: select/add/edit shipping address, order summary with totals from `calculate_order_totals` (California tax 8.5%, import tax 16%, shipping $400).
 - Order creation through the `create_order` database function (checks stock, lowers stock, saves the product name on the order).
 - Stripe Checkout session (checks the order belongs to the logged-in user) and a webhook that marks the order `paid` and sets `paid_at`.
@@ -24,7 +24,7 @@ Online store for a California-based client who buys items in the US and resells 
 
 ## Authentication
 - Login page with Spanish error messages mapped from Supabase error codes.
-- Sign-up page: name, phone, email, password + confirmation. Email confirmation is ON; the "Continue with Google" button is a placeholder, not wired up yet.
+- Sign-up page: name, phone, email, password + confirmation. Email confirmation is ON.
 - Emails sent through Resend SMTP. For now, without a verified domain, emails only reach the Resend account owner's address.
 - The session stays in sync across tabs, and the token refreshes automatically (`useAuthInit` listens for auth changes).
 - Route guards: `ProtectedRoute` for signed-in pages, `GuestRoute` keeps signed-in users away from `/login` and `/signup`. After login you land on home if the cart is empty, otherwise on the cart.
@@ -38,13 +38,15 @@ Online store for a California-based client who buys items in the US and resells 
 - Order details page (`/orders/:id`): items with images, subtotal/taxes/shipping/total, status pill, placeholder for shipping status.
 
 ## Localization
-- All UI text lives in `pau-shop-frontend/src/i18n/es.ts` and is read through `t.*`; dates use `locale` (`es-MX`).
+- All UI text lives in `pau-shop-frontend/src/i18n/es.ts` (Spanish) and `en.ts` (English, typed against `es.ts` so a missing key fails the build), read through `t.*`. Dates use `locale` (`es-MX` / `en-US`).
+- **ES | EN switcher** in the navbar. Spanish is the default; the choice is saved in localStorage (`language`) and switching reloads the page (cart, session and search survive). `<html lang>` follows the language.
+- Stripe Checkout opens in the same language (`es-419` / `en`) with product names in that language (the frontend sends `language` to `/payments/create-checkout-session`).
 - Database text is stored as JSON per language, `{"es": "...", "en": "..."}`, with Spanish required:
   - `products.name`
   - `products.description`
   - `categories.name` (categories have their own table with a `slug`)
   - `order_items.product_name`
-- The frontend shows these through `localize()` in `src/i18n/index.ts`.
+- The frontend shows these through `localize()` in `src/i18n/index.ts` (falls back to Spanish when there's no English text).
 
 ## Security hardening
 - `create_order` rejects negative, zero or fractional quantities, unknown products, and other users' shipping addresses. It merges duplicate lines and locks product rows so two orders can't oversell.
@@ -55,7 +57,7 @@ Online store for a California-based client who buys items in the US and resells 
 
 # ⏳ Pending
 
-1. **Google sign-in setup** (Google Cloud + Supabase), then a real Google test. The code is done and tested; see "Google sign-in" below.
+1. Before going live: publish the Google OAuth consent screen and add the production domain (Google Cloud authorized domains + client origins, Supabase redirect URLs). Rename the app in the Google consent screen and the Resend sender name to Polillita Shop if they still say PauShop.
 
 ---
 
@@ -82,20 +84,26 @@ Online store for a California-based client who buys items in the US and resells 
 
 ---
 
-## 4. Google sign-in ✅ code done (setup pending)
+## 4. Google sign-in ✅ done
 - One Supabase call (`signInWithOAuth`) for both login and sign-up: new Google accounts are created automatically, existing ones just sign in. The "Continuar con Google" button is on both pages.
 - Google users get their name automatically, but no phone: they're sent to `/complete-profile` (name + phone) before using the rest of the site. `POST /orders` also refuses orders without a phone.
 - The destination ("go back to /checkout") is kept in sessionStorage for the trip to Google.
 - **The cart is now saved in localStorage** (survives reloads and the trip to Google) and is emptied on the order success page.
 - Fixed: the app had two Supabase clients, which would both try to read the Google sign-in result.
-- Setup still needed: Google Cloud OAuth client + Supabase Google provider + redirect URL `http://localhost:5173/**`.
+- Configured in Google Cloud (OAuth client, testing mode) and Supabase (Google provider, redirect URL `http://localhost:5173/**`); tested with a real Google account.
+
+## 5. Shop name + search ✅ done
+- Customer-facing name changed to **Polillita Shop** (navbar, home title, browser tab).
+- Search bar on the browse page replaces the `/search` placeholder page.
+
+## 6. 404 page + language switcher ✅ done
+- Any unknown address shows a "Página no encontrada" page with links to home and browse.
+- ES | EN switcher in the navbar (see Localization). The navbar now wraps to two rows on phones.
 
 ---
 
 # 💡 Later / ideas
-- Language switcher + `en.ts` (database text already supports `en`).
+- Supabase auth emails (confirmation) are only in Spanish; Supabase uses one template for everyone.
 - Verify a domain in Resend so confirmation emails reach every customer.
-- Google sign-in (button already in place).
 - Stock is reduced when the order is created, not when it's paid. Unpaid orders keep their stock reserved forever; consider releasing it after a timeout or reducing stock only on payment.
-- Search page (`/search` is still a placeholder).
 - Admin moderation of reviews (hide or delete inappropriate ones).

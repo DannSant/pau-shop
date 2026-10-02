@@ -8,10 +8,10 @@ export async function createCheckoutSessionHandler(
 ) {
   try {
 
-    const { order_id } = req.body;
+    const { order_id, language } = req.body;
     const userId = (req as any).user.id;
 
-    const session = await createCheckoutSession(order_id, userId);
+    const session = await createCheckoutSession(order_id, userId, language === "en" ? "en" : "es");
 
     return success(res, session);
 

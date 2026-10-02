@@ -1,9 +1,13 @@
-import {  useMemo } from "react";
+import { useMemo } from "react";
 import ProductCard from "../../components/product/ProductCard";
 import { useSearchParams } from "react-router-dom";
 import { localize, t } from "../../i18n";
 import type { Category } from "../../types/product";
 import { useAppSelector } from "../../hooks/useAppSelector";
+
+// Lowercase without accents, so "pelicula" finds "Película".
+const normalize = (text: string) =>
+  text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 export default function BrowsePage() {
   const products = useAppSelector((state) => state.products.items);
@@ -12,6 +16,20 @@ export default function BrowsePage() {
 
   const selectedCategory = searchParams.get("category") || "";
   const selectedFranchise = searchParams.get("franchise") || "";
+  // Kept in the URL so the results are still there after visiting a product.
+  const query = searchParams.get("q") || "";
+  const searchTerm = normalize(query.trim());
+
+  const setQuery = (value: string) =>
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (value) params.set("q", value);
+        else params.delete("q");
+        return params;
+      },
+      { replace: true }
+    );
 
   // One entry per category slug, in the order set in the database.
   const categories = useMemo(() => {
@@ -42,9 +60,13 @@ export default function BrowsePage() {
         ? p.franchise === selectedFranchise
         : true;
 
-      return matchesCategory && matchesFranchise;
+      const matchesSearch = searchTerm
+        ? normalize(`${localize(p.name)} ${localize(p.description)}`).includes(searchTerm)
+        : true;
+
+      return matchesCategory && matchesFranchise && matchesSearch;
     });
-  }, [products, selectedCategory, selectedFranchise]);  
+  }, [products, selectedCategory, selectedFranchise, searchTerm]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-10">
@@ -124,12 +146,36 @@ export default function BrowsePage() {
 
       {/* Products */}
       <section className="flex-1">
-        <h1 className="text-2xl font-bold mb-8 text-white">
+        <h1 className="text-2xl font-bold mb-6 text-white">
           {t.browse.products}
         </h1>
 
+        <div className="relative mb-8">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t.browse.searchPlaceholder}
+            aria-label={t.browse.searchPlaceholder}
+            className="w-full rounded-xl px-4 py-3 pr-12 bg-white shadow-md outline-none focus:ring-2 focus:ring-purple-500 [&::-webkit-search-cancel-button]:hidden"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label={t.browse.clearSearch}
+              title={t.browse.clearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full text-gray-500 hover:bg-gray-100 hover:text-purple-600"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
         {filteredProducts.length === 0 ? (
-          <p>{t.browse.noProducts}</p>
+          <p className="text-white">
+            {searchTerm ? t.browse.noResults(query.trim()) : t.browse.noProducts}
+          </p>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => (

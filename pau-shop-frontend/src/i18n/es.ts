@@ -1,16 +1,23 @@
 export const es = {
   navbar: {
-    brand: "PauShop",
+    brand: "Polillita Shop",
     home: "Inicio",
     products: "Productos",
     browse: "Explorar",
     cart: "Carrito",
     login: "Iniciar sesión",
     profile: "Perfil",
-    admin: "Admin"
+    admin: "Admin",
+    language: "Idioma"
+  },
+  notFound: {
+    title: "Página no encontrada",
+    body: "La página que buscas no existe o fue movida.",
+    home: "Volver al inicio",
+    browse: "Explorar productos"
   },
   home: {
-    title: "Bienvenido a PauShop",
+    title: "Bienvenido a Polillita Shop",
     description:
       "Descubre los mejores productos con ofertas exclusivas. Calidad, buen precio y envío rápido.",
     featured: "Productos Destacados",
@@ -33,7 +40,10 @@ export const es = {
     franchises: "Franquicias",
     all: "Todas",
     noProducts: "No hay productos.",
-    products: "Productos"
+    products: "Productos",
+    searchPlaceholder: "Buscar por nombre o descripción",
+    clearSearch: "Borrar búsqueda",
+    noResults: (query: string) => `No hay productos que coincidan con "${query}".`
   },
   common: {
     price: "Precio",
