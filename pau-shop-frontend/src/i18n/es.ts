@@ -70,7 +70,16 @@ export const es = {
     shipping: "Envío",
     total: "Total",
     payNow: "Pagar ahora",
-    selectAddressFirst: "Selecciona una dirección primero"
+    redirecting: "Redirigiendo al pago...",
+    selectAddressFirst: "Selecciona una dirección primero",
+    paymentNotCompleted: "El pago no se completó. Tu carrito sigue aquí; puedes intentarlo de nuevo.",
+    errors: {
+      outOfStock: "Uno de los productos ya no tiene suficientes existencias. Revisa tu carrito.",
+      productUnavailable: "Uno de los productos ya no está disponible. Revisa tu carrito.",
+      phoneRequired: "Agrega tu número de teléfono en tu perfil antes de pagar.",
+      invalidAddress: "Elige otra dirección de envío.",
+      generic: "No pudimos iniciar el pago. Inténtalo de nuevo."
+    }
   },
   address: {
     title: "Dirección de envío",
@@ -98,7 +107,14 @@ export const es = {
     viewOrders: "Ver mis pedidos",
     orderDate: "Fecha del pedido",
     paymentStatus: "Estado del pago",
-    paidOnShort: (date: string) => `Pagado el ${date}`
+    paidOnShort: (date: string) => `Pagado el ${date}`,
+    confirming: "Confirmando tu pago...",
+    confirmingBody: "Esto toma unos segundos. No cierres esta página.",
+    stillProcessing:
+      "Tu pago se está procesando. Revisa el estado en tu historial de pedidos en unos minutos.",
+    notCompletedTitle: "El pago no se completó",
+    notCompletedBody: "Este pedido se canceló porque el pago no se completó. No se te hizo ningún cargo.",
+    backToCart: "Volver al carrito"
   },
   login: {
     title: "Iniciar sesión en tu cuenta",
@@ -184,7 +200,8 @@ export const es = {
     // Payment status (orders.status)
     status: {
       pending: "Pago pendiente",
-      paid: "Pagado"
+      paid: "Pagado",
+      cancelled: "Cancelado"
     } as Record<string, string>,
     // Shipping status (orders.shipping_status)
     shippingStatuses: {
@@ -194,6 +211,7 @@ export const es = {
     } as Record<string, string>,
     shippingDescriptions: {
       awaitingPayment: "Enviaremos tu pedido en cuanto se confirme el pago.",
+      cancelled: "Este pedido se canceló porque el pago no se completó.",
       pending: "Estamos preparando tu pedido para enviarlo.",
       shipped: "Tu pedido va en camino.",
       arrived: "Tu pedido fue entregado."

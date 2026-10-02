@@ -128,12 +128,16 @@ export default function OrderDetailsPage() {
       <div className="bg-white/10 backdrop-blur rounded-2xl p-6 mb-8">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
           <h2 className="text-xl font-semibold">{t.orders.shippingStatus}</h2>
-          <OrderStatusPill kind="shipping" status={order.shipping_status} />
+          {order.status !== "cancelled" && (
+            <OrderStatusPill kind="shipping" status={order.shipping_status} />
+          )}
         </div>
         <p className="text-white/60">
-          {order.status !== "paid"
-            ? t.orders.shippingDescriptions.awaitingPayment
-            : t.orders.shippingDescriptions[order.shipping_status]}
+          {order.status === "cancelled"
+            ? t.orders.shippingDescriptions.cancelled
+            : order.status !== "paid"
+              ? t.orders.shippingDescriptions.awaitingPayment
+              : t.orders.shippingDescriptions[order.shipping_status]}
         </p>
       </div>
 

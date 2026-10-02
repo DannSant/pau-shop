@@ -11,3 +11,12 @@ export const createCheckoutSession = async (orderId: string) => {
     })
   );
 };
+
+// Came back from Stripe without paying: closes the payment and releases the
+// order's stock. Returns the order's status afterwards ("cancelled", or "paid"
+// if the payment went through after all).
+export const cancelCheckout = async (orderId: string) => {
+  return request<{ status: string }>(
+    api.post("/payments/cancel", { order_id: orderId })
+  );
+};

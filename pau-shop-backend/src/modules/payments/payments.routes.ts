@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCheckoutSessionHandler } from "./payments.controller";
+import { cancelCheckoutHandler, createCheckoutSessionHandler } from "./payments.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 
 const router = Router();
@@ -9,5 +9,8 @@ router.post(
   requireAuth,
   createCheckoutSessionHandler
 );
+
+// Customer came back from Stripe without paying: release the order's stock.
+router.post("/cancel", requireAuth, cancelCheckoutHandler);
 
 export default router;

@@ -58,6 +58,8 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 
 # ⏳ Pending
 
+- 3 test orders from August (2026-08-16, 2026-08-18 ×2) are paid in Stripe but only for the product price ($25 of $431.13, the old undercharging bug), so the backend leaves them as "Pago pendiente" and logs a warning. Decide: refund/delete them (test data) or mark them paid by hand.
+
 1. Before going live: publish the Google OAuth consent screen and add the production domain (Google Cloud authorized domains + client origins, Supabase redirect URLs). Rename the app in the Google consent screen and the Resend sender name to Polillita Shop if they still say PauShop.
 
 ---
@@ -102,7 +104,7 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 - ES | EN switcher in the navbar (see Localization). The navbar now wraps to two rows on phones.
 
 
-## 7. Review moderation ✅ code done (migrations to run)
+## 7. Review moderation ✅ done
 - Admin tab **Usuarios y reseñas** with two views:
   - **Reseñas recientes:** every review, newest posted/edited first, with product, author, email and a delete button.
   - **Usuarios:** search by name/email; sorted by deleted reviews, then reviews.
@@ -112,7 +114,26 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 - Database: `20261002000100_review_moderation.sql` (`deleted_reviews`, `review_bans`, `admin_delete_reviews()`, views `admin_review_list` and `admin_user_review_summary`, none readable with the public key). Backend: `/moderation/*` (admins only).
 ---
 
+## 8. Payment failures ✅ done
+- **Stripe now charges the full order total:** products plus California tax, import tax and shipping as separate lines (it used to charge only the products). Totals are rounded to cents, and an order is only marked paid when Stripe's amount matches.
+- New payment status **cancelled** ("Cancelado"). `cancel_pending_order()` cancels an unpaid order and returns its stock in one step (never twice).
+- An unpaid order is cancelled (stock returned) when:
+  - the customer comes back from Stripe without paying (`cancel_url` → `/checkout?cancelled_order=…` → `POST /payments/cancel`, which also closes the Stripe page)
+  - the Stripe page expires (now 31 minutes instead of 24 hours; webhook `checkout.session.expired`)
+  - a delayed payment fails (`checkout.session.async_payment_failed`, ready for OXXO)
+  - the same customer starts a new order (their earlier unpaid one is cancelled first)
+  - the backend's check every 10 minutes finds it older than its payment page (covers missed webhooks; it also marks paid orders whose confirmation was missed).
+- Webhook: only marks paid when `payment_status` is `paid`; ignores repeated events; returns 500 on database errors so Stripe retries.
+- One Stripe page per order (reused while open); orders that aren't pending can't start a payment.
+- Checkout page: "Redirigiendo al pago..." and disabled button while starting; clear messages (out of stock, unavailable product, missing phone, generic); "El pago no se completó" notice when coming back.
+- Success page: "Confirmando tu pago..." while waiting (also asks Stripe directly); explains cancelled orders; empties the cart only once the order is paid.
+- Database: `20261003000000_payment_failures.sql`.
+- **Stripe setup:** the webhook must send `checkout.session.completed`, `checkout.session.expired`, `checkout.session.async_payment_succeeded` and `checkout.session.async_payment_failed`.
+
+---
+
 # 💡 Later / ideas
+- OXXO payments (cash at a store): the payment flow already handles delayed payments; needs enabling in Stripe and adding to `payment_method_types`.
 - Supabase auth emails (confirmation) are only in Spanish; Supabase uses one template for everyone.
 - Verify a domain in Resend so confirmation emails reach every customer.
 - Stock is reduced when the order is created, not when it's paid. Unpaid orders keep their stock reserved forever; consider releasing it after a timeout or reducing stock only on payment.

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -6,14 +6,20 @@ import { fetchOrderDetail } from "../../features/orders/orderSlice";
 import { clearCart } from "../../features/cart/cartSlice";
 import { locale, localize, t } from "../../i18n";
 
+const CONFIRMATION_CHECK_MS = 2000;
+const MAX_CONFIRMATION_CHECKS = 15; // about 30 seconds
+
 export default function OrderSuccessPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("order_id");
   const dispatch = useAppDispatch();
 
-  const { orderDetail, orderDetailLoading, orderDetailError } = useAppSelector(
+  const { orderDetail: loadedOrder, orderDetailError } = useAppSelector(
     (state) => state.order
   );
+  // Ignore a different order still in the store from an earlier page.
+  const orderDetail = loadedOrder?.id === orderId ? loadedOrder : null;
+  const status = orderDetail?.status;
 
   useEffect(() => {
     if (orderId) {
@@ -21,14 +27,34 @@ export default function OrderSuccessPage() {
     }
   }, [orderId, dispatch]);
 
-  // The cart is saved across visits, so empty it once the order is confirmed
-  // (not when the order is created: the customer may still cancel at Stripe).
-  const confirmedOrderId = orderDetail?.id === orderId ? orderId : null;
+  // Stripe's confirmation can arrive a few seconds after the customer gets
+  // here: check again for a while before saying it's still processing.
+  const [gaveUp, setGaveUp] = useState(false);
   useEffect(() => {
-    if (confirmedOrderId) {
+    if (!orderId || status !== "pending") return;
+
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      attempts += 1;
+      if (attempts > MAX_CONFIRMATION_CHECKS) {
+        window.clearInterval(timer);
+        setGaveUp(true);
+        return;
+      }
+      dispatch(fetchOrderDetail(orderId));
+    }, CONFIRMATION_CHECK_MS);
+
+    return () => window.clearInterval(timer);
+  }, [orderId, status, dispatch]);
+
+  // The cart is saved across visits, so empty it once the payment is
+  // confirmed (not before: the payment may still fail).
+  const paidOrderId = status === "paid" ? orderId : null;
+  useEffect(() => {
+    if (paidOrderId) {
       dispatch(clearCart());
     }
-  }, [confirmedOrderId, dispatch]);
+  }, [paidOrderId, dispatch]);
 
   if (!orderId) {
     return (
@@ -44,7 +70,7 @@ export default function OrderSuccessPage() {
     );
   }
 
-  if (orderDetailLoading || !orderDetail) {
+  if (!orderDetail) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-10 text-white text-center">
         {orderDetailError ? (
@@ -59,6 +85,45 @@ export default function OrderSuccessPage() {
           </>
         ) : (
           <p>{t.orders.detailLoading}</p>
+        )}
+      </div>
+    );
+  }
+
+  if (status === "cancelled") {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-10 text-white text-center">
+        <h1 className="text-2xl font-bold mb-3">{t.orderSuccess.notCompletedTitle}</h1>
+        <p className="text-white/70 mb-8">{t.orderSuccess.notCompletedBody}</p>
+        <Link
+          to="/cart"
+          className="inline-block bg-purple-600 hover:bg-purple-700 transition px-6 py-3 rounded-xl"
+        >
+          {t.orderSuccess.backToCart}
+        </Link>
+      </div>
+    );
+  }
+
+  if (status === "pending") {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-10 text-white text-center" role="status">
+        {gaveUp ? (
+          <>
+            <p className="text-white/80 mb-8">{t.orderSuccess.stillProcessing}</p>
+            <Link
+              to="/profile?tab=orders"
+              className="inline-block bg-purple-600 hover:bg-purple-700 transition px-6 py-3 rounded-xl"
+            >
+              {t.orderSuccess.viewOrders}
+            </Link>
+          </>
+        ) : (
+          <>
+            <div className="mx-auto mb-6 h-10 w-10 rounded-full border-4 border-white/20 border-t-purple-400 animate-spin" />
+            <h1 className="text-2xl font-bold mb-2">{t.orderSuccess.confirming}</h1>
+            <p className="text-white/70">{t.orderSuccess.confirmingBody}</p>
+          </>
         )}
       </div>
     );

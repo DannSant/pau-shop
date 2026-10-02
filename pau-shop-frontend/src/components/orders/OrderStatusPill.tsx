@@ -4,11 +4,12 @@ const AMBER = "bg-amber-500/20 text-amber-300 border-amber-400/40";
 const GREEN = "bg-green-500/20 text-green-300 border-green-400/40";
 const PURPLE = "bg-purple-500/30 text-purple-200 border-purple-300/50";
 const GRAY = "bg-gray-500/20 text-gray-300 border-gray-400/40";
+const RED = "bg-red-500/20 text-red-300 border-red-400/40";
 
 // "payment" shows orders.status, "shipping" shows orders.shipping_status.
 const PILLS = {
   payment: {
-    styles: { pending: AMBER, paid: GREEN } as Record<string, string>,
+    styles: { pending: AMBER, paid: GREEN, cancelled: RED } as Record<string, string>,
     labels: t.orders.status,
   },
   shipping: {

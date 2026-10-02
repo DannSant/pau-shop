@@ -10,6 +10,7 @@ import {
 } from "./orders.service";
 import { SHIPPING_STATUSES, ShippingStatus } from "./orders.types";
 import { getMyProfile } from "../users/users.service";
+import { cancelUserPendingOrders, confirmPaymentWithStripe } from "../payments/payments.service";
 import { failure, success } from "../../utils/response";
 
 // Mirrors the checks in the create_order database function, so bad requests
@@ -48,10 +49,17 @@ export async function createOrderHandler(req: Request, res: Response) {
       return failure(res, "A phone number is required to place an order", 400);
     }
 
+    // An earlier attempt that wasn't paid (e.g. the customer closed the
+    // payment page) is cancelled first, so its stock isn't held twice.
+    await cancelUserPendingOrders(user.id);
+
     const order = await createOrder(user.id, req.body);
     return success(res, order, 201);
   } catch (err: any) {
-    return failure(res, err.message);
+    // Messages from create_order (e.g. "Insufficient stock") are shown to the
+    // customer by the frontend; anything else is a generic failure.
+    const message = typeof err?.message === "string" ? err.message : "Failed to create order";
+    return failure(res, message);
   }
 }
 
@@ -68,7 +76,14 @@ export async function listOrdersHandler(req: Request, res: Response) {
 export async function getOrderDetailHandler(req: Request, res: Response) {
   try {
     const user = (req as any).user;
-    const order = await getOrderDetail(user.id, req.params.id);
+    let order = await getOrderDetail(user.id, req.params.id);
+
+    // Just back from paying: the webhook may not have arrived yet.
+    if (order.status === "pending" && order.stripe_session_id) {
+      const paid = await confirmPaymentWithStripe(order.id, order.stripe_session_id).catch(() => false);
+      if (paid) order = await getOrderDetail(user.id, req.params.id);
+    }
+
     return success(res,order);
   } catch {
     return failure(res,"Order not found",404)
@@ -112,7 +127,7 @@ export async function updateShippingStatusHandler(req: Request, res: Response) {
   }
 }
 
-const PAYMENT_STATUSES = ["pending", "paid"];
+const PAYMENT_STATUSES = ["pending", "paid", "cancelled"];
 
 // Admin only. Optional filters: ?shipping_status=...&payment_status=...
 export async function listAllOrdersHandler(req: Request, res: Response) {

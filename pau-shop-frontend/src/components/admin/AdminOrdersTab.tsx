@@ -8,7 +8,7 @@ import { locale, localize, t } from "../../i18n";
 import { CARD, INPUT, LABEL, SECONDARY_BUTTON } from "./adminStyles";
 
 const SHIPPING_STATUSES: ShippingStatus[] = ["pending", "shipped", "arrived"];
-const PAYMENT_STATUSES = ["pending", "paid"];
+const PAYMENT_STATUSES = ["pending", "paid", "cancelled"];
 
 const formatMoney = (amount: number) => `$${amount.toFixed(2)}`;
 

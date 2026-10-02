@@ -73,7 +73,16 @@ export const en: typeof es = {
     shipping: "Shipping",
     total: "Total",
     payNow: "Pay now",
-    selectAddressFirst: "Select an address first"
+    redirecting: "Redirecting to payment...",
+    selectAddressFirst: "Select an address first",
+    paymentNotCompleted: "The payment wasn't completed. Your cart is still here; you can try again.",
+    errors: {
+      outOfStock: "One of the products no longer has enough stock. Please check your cart.",
+      productUnavailable: "One of the products is no longer available. Please check your cart.",
+      phoneRequired: "Add your phone number to your profile before paying.",
+      invalidAddress: "Please choose another shipping address.",
+      generic: "We couldn't start the payment. Please try again."
+    }
   },
   address: {
     title: "Shipping address",
@@ -101,7 +110,14 @@ export const en: typeof es = {
     viewOrders: "View my orders",
     orderDate: "Order date",
     paymentStatus: "Payment status",
-    paidOnShort: (date: string) => `Paid on ${date}`
+    paidOnShort: (date: string) => `Paid on ${date}`,
+    confirming: "Confirming your payment...",
+    confirmingBody: "This takes a few seconds. Please don't close this page.",
+    stillProcessing:
+      "Your payment is being processed. Check its status in your order history in a few minutes.",
+    notCompletedTitle: "The payment wasn't completed",
+    notCompletedBody: "This order was cancelled because the payment wasn't completed. You weren't charged.",
+    backToCart: "Back to cart"
   },
   login: {
     title: "Log in to your account",
@@ -185,7 +201,8 @@ export const en: typeof es = {
     date: "Date",
     status: {
       pending: "Payment pending",
-      paid: "Paid"
+      paid: "Paid",
+      cancelled: "Cancelled"
     },
     shippingStatuses: {
       pending: "To be shipped",
@@ -194,6 +211,7 @@ export const en: typeof es = {
     },
     shippingDescriptions: {
       awaitingPayment: "We'll ship your order as soon as the payment is confirmed.",
+      cancelled: "This order was cancelled because the payment wasn't completed.",
       pending: "We're getting your order ready to ship.",
       shipped: "Your order is on its way.",
       arrived: "Your order was delivered."
