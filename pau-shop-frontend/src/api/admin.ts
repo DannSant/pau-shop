@@ -71,3 +71,76 @@ export const updateCategory = (id: string, payload: CategoryPayload) =>
 // Orders
 export const getAdminOrders = (filters: { shipping_status?: string; payment_status?: string }) =>
   request<AdminOrder[]>(api.get("/orders/admin", { params: filters }));
+
+// Review moderation
+export interface Page<T> {
+  items: T[];
+  hasMore: boolean;
+}
+
+export interface AdminReview {
+  id: string;
+  product_id: string | null;
+  user_id: string;
+  score: number;
+  comment: string | null;
+  created_at: string;
+  updated_at: string | null;
+  product_name: LocalizedText | null;
+  user_name: string | null;
+  user_email: string | null;
+  user_banned: boolean;
+}
+
+export interface UserReviewSummary {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  role: string;
+  created_at: string;
+  review_count: number;
+  deleted_review_count: number;
+  last_deleted_at: string | null;
+  banned_at: string | null;
+  ban_note: string | null;
+}
+
+export interface DeletedReview {
+  id: string;
+  product_id: string | null;
+  product_name: LocalizedText | null;
+  score: number;
+  comment: string | null;
+  review_created_at: string;
+  deleted_at: string;
+  deleted_by_name: string | null;
+}
+
+export interface UserModerationDetail {
+  user: UserReviewSummary;
+  banned_by_name: string | null;
+  reviews: AdminReview[];
+  deleted: DeletedReview[];
+}
+
+export const getRecentReviews = (offset = 0) =>
+  request<Page<AdminReview>>(api.get("/moderation/reviews", { params: { offset } }));
+
+export const deleteReviewAsAdmin = (reviewId: string) =>
+  request<{ deleted: number }>(api.delete(`/moderation/reviews/${reviewId}`));
+
+export const getModerationUsers = (search: string, offset = 0) =>
+  request<Page<UserReviewSummary>>(api.get("/moderation/users", { params: { search, offset } }));
+
+export const getModerationUser = (userId: string) =>
+  request<UserModerationDetail>(api.get(`/moderation/users/${userId}`));
+
+export const deleteAllUserReviews = (userId: string) =>
+  request<{ deleted: number }>(api.delete(`/moderation/users/${userId}/reviews`));
+
+export const banUserFromReviews = (userId: string, note: string | null) =>
+  request<UserReviewSummary>(api.put(`/moderation/users/${userId}/ban`, { note }));
+
+export const unbanUserFromReviews = (userId: string) =>
+  request<UserReviewSummary>(api.delete(`/moderation/users/${userId}/ban`));

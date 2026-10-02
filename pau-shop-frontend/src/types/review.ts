@@ -16,5 +16,7 @@ export interface ProductReviews extends ReviewStats {
 
 export interface MyReviewStatus {
   canReview: boolean;
+  // Blocked by an admin: can no longer write or edit reviews.
+  banned: boolean;
   review: Omit<Review, "author"> | null;
 }

@@ -7,6 +7,7 @@ import usersRouter from "./modules/users/users.routes";
 import addressesRouter from "./modules/addresses/addresses.routes";
 import ordersRouter from "./modules/orders/orders.routes";
 import reviewsRouter from "./modules/reviews/reviews.routes";
+import moderationRouter from "./modules/moderation/moderation.routes";
 import productImagesRouter from "./modules/product-images/product-images.routes";
 import paymentsRouter from "./modules/payments/payments.routes";
 import webhooksRouter from "./modules/webhooks/webhooks.routes";
@@ -19,6 +20,7 @@ router.use("/users", usersRouter);
 router.use("/addresses", addressesRouter);
 router.use("/orders", ordersRouter);
 router.use("/products/:id/reviews", reviewsRouter);
+router.use("/moderation", moderationRouter);
 router.use("/products/:id/images", productImagesRouter);
 router.use("/payments", paymentsRouter);
 

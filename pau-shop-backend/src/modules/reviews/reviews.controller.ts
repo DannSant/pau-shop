@@ -8,6 +8,7 @@ import {
   saveReview
 } from "./reviews.service";
 import { getMyProfile } from "../users/users.service";
+import { isBannedFromReviews } from "../moderation/moderation.service";
 import { failure, success } from "../../utils/response";
 import { MAX_COMMENT_LENGTH, ReviewInput } from "./reviews.types";
 
@@ -40,14 +41,16 @@ export async function listReviewsHandler(req: Request, res: Response) {
 }
 
 // Signed in: whether the user may review this product, and their review if any.
+// "banned" users (blocked by an admin) can't write or edit reviews.
 export async function myReviewHandler(req: Request, res: Response) {
   try {
     const user = (req as any).user;
-    const [review, canReview] = await Promise.all([
+    const [review, canReview, banned] = await Promise.all([
       getOwnReview(user.id, req.params.id),
-      hasReceivedProduct(user.id, req.params.id)
+      hasReceivedProduct(user.id, req.params.id),
+      isBannedFromReviews(user.id)
     ]);
-    return success(res, { canReview, review });
+    return success(res, { canReview, banned, review });
   } catch {
     return failure(res, "Failed to fetch your review", 500);
   }
@@ -62,6 +65,10 @@ export async function saveReviewHandler(req: Request, res: Response) {
 
     if (!(await productIsAvailable(req.params.id))) {
       return failure(res, "Product not found", 404);
+    }
+
+    if (await isBannedFromReviews(user.id)) {
+      return failure(res, "You can no longer post reviews", 403);
     }
 
     if (!(await hasReceivedProduct(user.id, req.params.id))) {

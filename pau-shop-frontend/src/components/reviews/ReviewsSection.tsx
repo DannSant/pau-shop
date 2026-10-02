@@ -186,7 +186,7 @@ export default function ReviewsSection({
               <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
                 <h3 className="font-semibold">{t.reviews.yourReview}</h3>
                 <div className="flex gap-2">
-                  {mine.canReview && (
+                  {mine.canReview && !mine.banned && (
                     <button
                       type="button"
                       onClick={() => setEditing(true)}
@@ -208,6 +208,8 @@ export default function ReviewsSection({
               <StarRating value={ownReview.score} size="sm" />
               {ownReview.comment && <p className="mt-2 text-gray-700 whitespace-pre-line">{ownReview.comment}</p>}
             </div>
+          ) : mine.banned ? (
+            <p className="text-gray-500">{t.reviews.banned}</p>
           ) : mine.canReview ? (
             <ReviewForm
               key={ownReview?.id ?? "new"}

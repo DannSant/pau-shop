@@ -23,6 +23,7 @@ import OrderDetailsPage from "../pages/user/OrderDetailsPage";
 import CartPage from "../pages/user/CartPage";
 import AdminPage from "../pages/admin/AdminPage";
 import AdminProductFormPage from "../pages/admin/AdminProductFormPage";
+import AdminUserPage from "../pages/admin/AdminUserPage";
 import useAuthInit from "../hooks/useAuthInit";
 
 export default function AppRouter() {
@@ -59,6 +60,7 @@ export default function AppRouter() {
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/admin/products/new" element={<AdminProductFormPage />} />
               <Route path="/admin/products/:id" element={<AdminProductFormPage />} />
+              <Route path="/admin/users/:id" element={<AdminUserPage />} />
             </Route>
 
             {/* Any other address */}

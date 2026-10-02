@@ -297,7 +297,59 @@ export const en: typeof es = {
     hideDetails: "Hide details",
     shippingUpdated: "Shipping status updated",
     shippingError: "We couldn't update the shipping status.",
-    unpaidCannotShip: "It can be shipped once the order is paid."
+    unpaidCannotShip: "It can be shipped once the order is paid.",
+
+    // Users & reviews (moderation)
+    tabReviews: "Users & reviews",
+    recentReviews: "Recent reviews",
+    users: "Users",
+    searchUsers: "Search by name or email",
+    loadMore: "Load more",
+    noReviews: "No reviews.",
+    noUsers: "No users found.",
+    reviewsLabel: "Reviews",
+    deletedLabel: "Deleted",
+    bannedPill: "Banned",
+    adminPill: "Admin",
+    edited: "edited",
+    productRemoved: "Deleted product",
+    deleteReview: "Delete",
+    confirmDeleteReview: (author: string) =>
+      `Delete the review by ${author}? It will be removed from the product's average and kept in their history.`,
+    reviewDeleted: "Review deleted",
+    reviewDeleteError: "We couldn't delete the review.",
+    lastDeleted: (date: string) => `Last deletion: ${date}`,
+    backToUsers: "Back to users",
+    userNotFound: "We couldn't find this user.",
+    memberSince: "Member since",
+    phone: "Phone",
+    noPhone: "No phone",
+    reviewPermission: "Review permission",
+    canReview: "Can write reviews.",
+    bannedSince: (date: string, admin: string | null) =>
+      `Can't write reviews since ${date}${admin ? ` (banned by ${admin})` : ""}.`,
+    banNote: "Internal note (optional)",
+    banNoteLabel: "Note",
+    banNotePlaceholder: "Reason for the ban. Only admins can see it.",
+    ban: "Ban from reviews",
+    unban: "Lift ban",
+    confirmBan: (name: string) =>
+      `Ban ${name}? They won't be able to write or edit reviews. Their current reviews stay.`,
+    confirmUnban: (name: string) => `Let ${name} write reviews again?`,
+    bannedToast: "User banned",
+    unbannedToast: "Ban lifted",
+    banError: "We couldn't update the ban.",
+    cannotBanAdmin: "Admins can't be banned.",
+    deleteAllReviews: (n: number) => `Delete all their reviews (${n})`,
+    confirmDeleteAll: (n: number, name: string) =>
+      `Delete all ${n} reviews by ${name}? They will be kept in their history.`,
+    allDeletedToast: (n: number) => (n === 1 ? "1 review deleted" : `${n} reviews deleted`),
+    currentReviews: "Published reviews",
+    noCurrentReviews: "No published reviews.",
+    deletedHistory: "Deleted reviews",
+    noDeletedHistory: "None of their reviews have been deleted.",
+    deletedOn: (date: string, admin: string | null) =>
+      `Deleted on ${date}${admin ? ` by ${admin}` : ""}`
   },
   reviews: {
     title: "Reviews",
@@ -329,6 +381,7 @@ export const en: typeof es = {
     loginToReview: "to leave a review.",
     loginLink: "Log in",
     onlyBuyers: "You'll be able to leave a review once you receive this product.",
+    banned: "Your account can no longer post reviews.",
     edited: "(edited)",
     anonymous: "Customer"
   }

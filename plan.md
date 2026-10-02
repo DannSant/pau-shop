@@ -52,6 +52,7 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 - `create_order` rejects negative, zero or fractional quantities, unknown products, and other users' shipping addresses. It merges duplicate lines and locks product rows so two orders can't oversell.
 - Only the backend's service key can run `create_order`.
 - `POST /orders` validates its input before calling the database.
+- The public (publishable) key can't write to any table: signed-in customers could previously set their own `role` to `admin`, change product prices, add product images and insert reviews directly. Fixed in `20261002000000_block_public_writes.sql`; all writes go through the backend.
 
 ---
 
@@ -100,10 +101,19 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 - Any unknown address shows a "Página no encontrada" page with links to home and browse.
 - ES | EN switcher in the navbar (see Localization). The navbar now wraps to two rows on phones.
 
+
+## 7. Review moderation ✅ code done (migrations to run)
+- Admin tab **Usuarios y reseñas** with two views:
+  - **Reseñas recientes:** every review, newest posted/edited first, with product, author, email and a delete button.
+  - **Usuarios:** search by name/email; sorted by deleted reviews, then reviews.
+- User page `/admin/users/:id`: contact info, counts, review ban (with internal note) / lift ban, published reviews (delete one or all), deleted-review history (what, when, by which admin).
+- Admin deletes are hard deletes (the average updates) and a copy goes to `deleted_reviews`. Customers deleting their own review aren't recorded.
+- Banned customers (`review_bans`) can't post or edit reviews (backend returns 403); the product page says so. Their existing reviews stay unless deleted. Admins can't be banned.
+- Database: `20261002000100_review_moderation.sql` (`deleted_reviews`, `review_bans`, `admin_delete_reviews()`, views `admin_review_list` and `admin_user_review_summary`, none readable with the public key). Backend: `/moderation/*` (admins only).
 ---
 
 # 💡 Later / ideas
 - Supabase auth emails (confirmation) are only in Spanish; Supabase uses one template for everyone.
 - Verify a domain in Resend so confirmation emails reach every customer.
 - Stock is reduced when the order is created, not when it's paid. Unpaid orders keep their stock reserved forever; consider releasing it after a timeout or reducing stock only on payment.
-- Admin moderation of reviews (hide or delete inappropriate ones).
+- Let customers report a review, so admins see flagged ones first.

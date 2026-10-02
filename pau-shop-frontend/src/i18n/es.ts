@@ -297,7 +297,59 @@ export const es = {
     hideDetails: "Ocultar detalles",
     shippingUpdated: "Estado de envío actualizado",
     shippingError: "No pudimos actualizar el estado de envío.",
-    unpaidCannotShip: "Se podrá enviar cuando el pedido esté pagado."
+    unpaidCannotShip: "Se podrá enviar cuando el pedido esté pagado.",
+
+    // Users & reviews (moderation)
+    tabReviews: "Usuarios y reseñas",
+    recentReviews: "Reseñas recientes",
+    users: "Usuarios",
+    searchUsers: "Buscar por nombre o correo",
+    loadMore: "Cargar más",
+    noReviews: "No hay reseñas.",
+    noUsers: "No se encontraron usuarios.",
+    reviewsLabel: "Reseñas",
+    deletedLabel: "Eliminadas",
+    bannedPill: "Bloqueado",
+    adminPill: "Admin",
+    edited: "editada",
+    productRemoved: "Producto eliminado",
+    deleteReview: "Eliminar",
+    confirmDeleteReview: (author: string) =>
+      `¿Eliminar la reseña de ${author}? Se quitará del promedio del producto y quedará en su historial.`,
+    reviewDeleted: "Reseña eliminada",
+    reviewDeleteError: "No pudimos eliminar la reseña.",
+    lastDeleted: (date: string) => `Última eliminación: ${date}`,
+    backToUsers: "Volver a usuarios",
+    userNotFound: "No encontramos este usuario.",
+    memberSince: "Miembro desde",
+    phone: "Teléfono",
+    noPhone: "Sin teléfono",
+    reviewPermission: "Permiso para reseñas",
+    canReview: "Puede escribir reseñas.",
+    bannedSince: (date: string, admin: string | null) =>
+      `No puede escribir reseñas desde el ${date}${admin ? ` (bloqueado por ${admin})` : ""}.`,
+    banNote: "Nota interna (opcional)",
+    banNoteLabel: "Nota",
+    banNotePlaceholder: "Motivo del bloqueo. Solo lo ven los administradores.",
+    ban: "Bloquear reseñas",
+    unban: "Desbloquear",
+    confirmBan: (name: string) =>
+      `¿Bloquear a ${name}? Ya no podrá escribir ni editar reseñas. Sus reseñas actuales se mantienen.`,
+    confirmUnban: (name: string) => `¿Permitir que ${name} vuelva a escribir reseñas?`,
+    bannedToast: "Usuario bloqueado",
+    unbannedToast: "Usuario desbloqueado",
+    banError: "No pudimos actualizar el bloqueo.",
+    cannotBanAdmin: "Los administradores no se pueden bloquear.",
+    deleteAllReviews: (n: number) => `Eliminar todas sus reseñas (${n})`,
+    confirmDeleteAll: (n: number, name: string) =>
+      `¿Eliminar las ${n} reseñas de ${name}? Quedarán en su historial.`,
+    allDeletedToast: (n: number) => (n === 1 ? "1 reseña eliminada" : `${n} reseñas eliminadas`),
+    currentReviews: "Reseñas publicadas",
+    noCurrentReviews: "No tiene reseñas publicadas.",
+    deletedHistory: "Reseñas eliminadas",
+    noDeletedHistory: "No se le ha eliminado ninguna reseña.",
+    deletedOn: (date: string, admin: string | null) =>
+      `Eliminada el ${date}${admin ? ` por ${admin}` : ""}`
   },
   reviews: {
     title: "Reseñas",
@@ -329,6 +381,7 @@ export const es = {
     loginToReview: "para dejar una reseña.",
     loginLink: "Inicia sesión",
     onlyBuyers: "Podrás dejar una reseña cuando recibas este producto.",
+    banned: "Tu cuenta ya no puede publicar reseñas.",
     edited: "(editada)",
     anonymous: "Cliente"
   }

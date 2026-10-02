@@ -2,9 +2,10 @@ import { useSearchParams } from "react-router-dom";
 import AdminProductsTab from "../../components/admin/AdminProductsTab";
 import AdminCategoriesTab from "../../components/admin/AdminCategoriesTab";
 import AdminOrdersTab from "../../components/admin/AdminOrdersTab";
+import AdminReviewsTab from "../../components/admin/AdminReviewsTab";
 import { t } from "../../i18n";
 
-const TABS = ["products", "categories", "orders"] as const;
+const TABS = ["products", "categories", "orders", "reviews"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -17,13 +18,14 @@ export default function AdminPage() {
     products: t.admin.tabProducts,
     categories: t.admin.tabCategories,
     orders: t.admin.tabOrders,
+    reviews: t.admin.tabReviews,
   };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 text-white">
       <h1 className="text-3xl font-bold mb-8">{t.admin.title}</h1>
 
-      <div className="flex gap-2 mb-8 border-b border-white/20">
+      <div className="flex flex-wrap gap-2 mb-8 border-b border-white/20">
         {TABS.map((tab) => (
           <button
             key={tab}
@@ -43,6 +45,7 @@ export default function AdminPage() {
       {activeTab === "products" && <AdminProductsTab />}
       {activeTab === "categories" && <AdminCategoriesTab />}
       {activeTab === "orders" && <AdminOrdersTab />}
+      {activeTab === "reviews" && <AdminReviewsTab />}
     </div>
   );
 }
