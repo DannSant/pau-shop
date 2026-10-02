@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from '../features/auth/authSlice'
-import cartReducer from "../features/cart/cartSlice";
+import cartReducer, { saveCart } from "../features/cart/cartSlice";
 import productsReducer from "../features/products/productsSlice";
 import shippingReducer from "../features/shipping/shippingSlice";
 import orderReducer from "../features/orders/orderSlice";
@@ -19,6 +19,16 @@ export const store = configureStore({
     checkout: checkoutReducer,
     address: addressReducer,
   },
+});
+
+// Save the cart whenever it changes.
+let savedCart = store.getState().cart.items;
+store.subscribe(() => {
+  const items = store.getState().cart.items;
+  if (items !== savedCart) {
+    savedCart = items;
+    saveCart(items);
+  }
 });
 
 // Types

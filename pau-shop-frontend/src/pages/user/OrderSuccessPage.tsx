@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { fetchOrderDetail } from "../../features/orders/orderSlice";
+import { clearCart } from "../../features/cart/cartSlice";
 import { locale, localize, t } from "../../i18n";
 
 export default function OrderSuccessPage() {
@@ -19,6 +20,15 @@ export default function OrderSuccessPage() {
       dispatch(fetchOrderDetail(orderId));
     }
   }, [orderId, dispatch]);
+
+  // The cart is saved across visits, so empty it once the order is confirmed
+  // (not when the order is created: the customer may still cancel at Stripe).
+  const confirmedOrderId = orderDetail?.id === orderId ? orderId : null;
+  useEffect(() => {
+    if (confirmedOrderId) {
+      dispatch(clearCart());
+    }
+  }, [confirmedOrderId, dispatch]);
 
   if (!orderId) {
     return (

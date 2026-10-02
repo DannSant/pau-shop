@@ -1,6 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!
-);
+// The app must use a single Supabase client: two clients would both try to
+// read the Google sign-in result from the URL, and only one can use it.
+export { supabase } from "../lib/supabase";

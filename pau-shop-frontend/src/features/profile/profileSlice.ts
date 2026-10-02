@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getMe, updateProfile, type UpdateUserProfilePayload } from "../../api/users";
 import type { UserProfile } from "../../types/user";
-import { logout } from "../auth/authSlice";
+import { logout, setProfileStatus } from "../auth/authSlice";
+import { rememberProfile } from "../auth/ensureUserProfile";
 
 interface ProfileState {
   profile: UserProfile | null;
@@ -23,8 +24,16 @@ export const fetchProfile = createAsyncThunk("profile/fetchProfile", async () =>
 
 export const saveProfile = createAsyncThunk(
   "profile/saveProfile",
-  async (payload: UpdateUserProfilePayload) => {
-    return await updateProfile(payload);
+  async (payload: UpdateUserProfilePayload, { dispatch }) => {
+    const profile = await updateProfile(payload);
+
+    // Keep the auth state (e.g. the /complete-profile gate) and cache in sync.
+    rememberProfile(profile);
+    dispatch(
+      setProfileStatus({ userId: profile.id, role: profile.role, hasPhone: !!profile.phone })
+    );
+
+    return profile;
   }
 );
 

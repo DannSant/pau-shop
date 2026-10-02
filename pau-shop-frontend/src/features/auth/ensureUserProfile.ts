@@ -20,3 +20,9 @@ export function ensureUserProfile(user: { id: string }): Promise<UserProfile | n
 
   return profile;
 }
+
+// Replaces the cached profile after it's been saved, so a later auth event in
+// this tab doesn't bring back the old values (e.g. "no phone").
+export function rememberProfile(profile: UserProfile) {
+  profiles.set(profile.id, Promise.resolve(profile));
+}

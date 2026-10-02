@@ -55,7 +55,7 @@ Online store for a California-based client who buys items in the US and resells 
 
 # ⏳ Pending
 
-Nothing pending. All migrations up to `20261001000200_review_rules.sql` are applied, and a real order through `create_order` plus a Stripe test-mode checkout were verified.
+1. **Google sign-in setup** (Google Cloud + Supabase), then a real Google test. The code is done and tested; see "Google sign-in" below.
 
 ---
 
@@ -82,11 +82,20 @@ Nothing pending. All migrations up to `20261001000200_review_rules.sql` are appl
 
 ---
 
+## 4. Google sign-in ✅ code done (setup pending)
+- One Supabase call (`signInWithOAuth`) for both login and sign-up: new Google accounts are created automatically, existing ones just sign in. The "Continuar con Google" button is on both pages.
+- Google users get their name automatically, but no phone: they're sent to `/complete-profile` (name + phone) before using the rest of the site. `POST /orders` also refuses orders without a phone.
+- The destination ("go back to /checkout") is kept in sessionStorage for the trip to Google.
+- **The cart is now saved in localStorage** (survives reloads and the trip to Google) and is emptied on the order success page.
+- Fixed: the app had two Supabase clients, which would both try to read the Google sign-in result.
+- Setup still needed: Google Cloud OAuth client + Supabase Google provider + redirect URL `http://localhost:5173/**`.
+
+---
+
 # 💡 Later / ideas
 - Language switcher + `en.ts` (database text already supports `en`).
 - Verify a domain in Resend so confirmation emails reach every customer.
 - Google sign-in (button already in place).
 - Stock is reduced when the order is created, not when it's paid. Unpaid orders keep their stock reserved forever; consider releasing it after a timeout or reducing stock only on payment.
 - Search page (`/search` is still a placeholder).
-- Persist the cart across page reloads.
 - Admin moderation of reviews (hide or delete inappropriate ones).

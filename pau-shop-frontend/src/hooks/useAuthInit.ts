@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { supabase } from "../lib/supabase";
-import { logout, setRole, setUser } from "../features/auth/authSlice";
+import { logout, setProfileStatus, setUser } from "../features/auth/authSlice";
 import { ensureUserProfile } from "../features/auth/ensureUserProfile";
 
 export default function useAuthInit() {
@@ -26,8 +26,15 @@ export default function useAuthInit() {
 
       if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
         // The backend still enforces the role; this only drives the UI.
+        // If the profile can't be loaded, don't block the user on the phone step.
         ensureUserProfile(user).then((profile) => {
-          dispatch(setRole({ userId: user.id, role: profile?.role ?? "user" }));
+          dispatch(
+            setProfileStatus({
+              userId: user.id,
+              role: profile?.role ?? "user",
+              hasPhone: profile ? !!profile.phone : true,
+            })
+          );
         });
       }
     });

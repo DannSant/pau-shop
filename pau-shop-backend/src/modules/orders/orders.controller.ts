@@ -9,6 +9,7 @@ import {
   setShippingStatus
 } from "./orders.service";
 import { SHIPPING_STATUSES, ShippingStatus } from "./orders.types";
+import { getMyProfile } from "../users/users.service";
 import { failure, success } from "../../utils/response";
 
 // Mirrors the checks in the create_order database function, so bad requests
@@ -39,6 +40,14 @@ export async function createOrderHandler(req: Request, res: Response) {
 
   try {
     const user = (req as any).user;
+
+    // We contact customers by phone about shipping (Google sign-ins start
+    // without one until they complete their profile).
+    const profile = await getMyProfile(user);
+    if (!profile.phone?.trim()) {
+      return failure(res, "A phone number is required to place an order", 400);
+    }
+
     const order = await createOrder(user.id, req.body);
     return success(res, order, 201);
   } catch (err: any) {

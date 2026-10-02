@@ -7,14 +7,22 @@ interface AuthUser {
   email: string;
   // From user_data ("user" | "admin"); null until the profile has loaded.
   role: string | null;
+  // Whether user_data has a phone; null until the profile has loaded.
+  // Google sign-ins start without one and are sent to /complete-profile.
+  hasPhone: boolean | null;
 }
 
 type SessionUser = Pick<AuthUser, "id" | "email">;
 
-// Session updates (login, token refresh, other tabs) keep the role already
-// loaded for the same user; the role itself only comes from setRole.
+// Session updates (login, token refresh, other tabs) keep the profile status
+// already loaded for the same user; it only comes from setProfileStatus.
 function withKnownRole(current: AuthUser | null, next: SessionUser): AuthUser {
-  return { ...next, role: current?.id === next.id ? current.role : null };
+  const same = current?.id === next.id;
+  return {
+    ...next,
+    role: same ? current.role : null,
+    hasPhone: same ? current.hasPhone : null,
+  };
 }
 
 interface AuthState {
@@ -94,9 +102,13 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
     // Ignored if another user has signed in since the profile was requested.
-    setRole(state, action: PayloadAction<{ userId: string; role: string }>) {
+    setProfileStatus(
+      state,
+      action: PayloadAction<{ userId: string; role: string; hasPhone: boolean }>
+    ) {
       if (state.user?.id === action.payload.userId) {
         state.user.role = action.payload.role;
+        state.user.hasPhone = action.payload.hasPhone;
       }
     },   
     clearAuthError(state) {
@@ -162,6 +174,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setUser, setRole, clearAuthError } = authSlice.actions;
+export const { logout, setUser, setProfileStatus, clearAuthError } = authSlice.actions;
 
 export default authSlice.reducer;

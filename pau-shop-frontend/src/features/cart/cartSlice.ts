@@ -12,8 +12,41 @@ interface CartState {
   items: CartItem[];
 }
 
+// The cart is kept in localStorage so it survives page reloads and the trip
+// to Google when signing in.
+const CART_KEY = "cart";
+
+const isCartItem = (item: unknown): item is CartItem => {
+  const i = item as CartItem;
+  return (
+    !!i &&
+    typeof i.product_id === "string" &&
+    typeof i.name?.es === "string" &&
+    typeof i.price === "number" &&
+    Number.isInteger(i.quantity) &&
+    i.quantity > 0
+  );
+};
+
+function loadCart(): CartItem[] {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CART_KEY) ?? "[]");
+    return Array.isArray(saved) ? saved.filter(isCartItem) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveCart(items: CartItem[]) {
+  try {
+    localStorage.setItem(CART_KEY, JSON.stringify(items));
+  } catch {
+    // storage full or blocked: the cart still works for this visit
+  }
+}
+
 const initialState: CartState = {
-  items: [],
+  items: loadCart(),
 };
 
 const cartSlice = createSlice({

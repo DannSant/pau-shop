@@ -4,10 +4,7 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { saveProfile } from "../../features/profile/profileSlice";
 import { locale, t } from "../../i18n";
-
-// Same rule the backend enforces on PATCH /users/me. Browsers compile `pattern`
-// with the `v` flag, which requires escaping - ( ) inside a character class.
-const PHONE_PATTERN = "[0-9+\\-\\(\\) ]{7,20}";
+import { PHONE_PATTERN } from "../../utils/phone";
 
 export default function ProfileGeneralTab() {
   const dispatch = useAppDispatch();

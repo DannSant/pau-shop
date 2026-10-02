@@ -48,3 +48,15 @@ export const signup = async (
 
   return data;
 };
+
+// Sends the browser to Google. New Google accounts are created automatically
+// and existing ones are just signed in, so sign-up and login use the same call.
+// Supabase brings the user back to /login, where GuestRoute takes over.
+export const signInWithGoogle = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${window.location.origin}/login` },
+  });
+
+  if (error) throw error;
+};

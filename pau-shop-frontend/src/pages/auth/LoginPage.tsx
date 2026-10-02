@@ -1,13 +1,27 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../app/store";
 import { clearAuthError, loginUser } from "../../features/auth/authSlice";
 import { t } from "../../i18n";
+import GoogleButton from "../../components/auth/GoogleButton";
+
+// When Google sign-in fails or is cancelled, Supabase returns to /login with
+// the error in the query string or the hash.
+function readGoogleError(): string | null {
+  const params = new URLSearchParams(
+    window.location.search || window.location.hash.replace(/^#/, "")
+  );
+  const error = params.get("error");
+  if (!error) return null;
+  return error === "access_denied" ? t.login.googleCancelled : t.login.googleError;
+}
 
 // Redirect after login is handled by GuestRoute.
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
+  const [googleError, setGoogleError] = useState<string | null>(readGoogleError);
 
   const { loading, error } = useSelector(
     (state: RootState) => state.auth
@@ -61,9 +75,9 @@ export default function LoginPage() {
           />
         </div>
 
-        {error && (
+        {(googleError || error) && (
           <p className="text-red-400 mb-4">
-            {t.authErrors[error] ?? t.login.failed}
+            {googleError ?? (error && (t.authErrors[error] ?? t.login.failed))}
           </p>
         )}
 
@@ -74,6 +88,14 @@ export default function LoginPage() {
         >
           {loading ? t.login.submitting : t.login.submit}
         </button>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-gray-700" />
+          <span className="text-gray-400 text-sm">{t.login.orDivider}</span>
+          <div className="flex-1 h-px bg-gray-700" />
+        </div>
+
+        <GoogleButton next={location.state?.from?.pathname} onError={setGoogleError} />
 
         <Link
           to="/signup"
