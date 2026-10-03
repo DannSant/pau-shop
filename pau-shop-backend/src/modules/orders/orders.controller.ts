@@ -91,12 +91,16 @@ export async function getOrderDetailHandler(req: Request, res: Response) {
 }
 
 export async function calculateTotalHandler(req: Request, res: Response) {
+  const amount = Number(req.query.amount);
+  if (req.query.amount === undefined || !Number.isFinite(amount) || amount < 0) {
+    return failure(res, "amount must be a number of 0 or more", 400);
+  }
+
   try {
-    const amount = parseFloat(req.query.amount as string);
-    const order = await calculateOrderTotal(amount);
-    return success(res,order);
+    const totals = await calculateOrderTotal(amount);
+    return success(res, totals);
   } catch {
-    return failure(res,"Order not found",404)
+    return failure(res, "Failed to calculate totals", 500);
   }
 }
 

@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
 import { cancelUnpaidOrder, createCheckoutSession, PaymentError } from "./payments.service";
 import { success, failure } from "../../utils/response";
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { isUuid } from "../../utils/ids";
 
 function readOrderId(body: any) {
-  const orderId = body?.order_id;
-  return typeof orderId === "string" && UUID.test(orderId) ? orderId : null;
+  return isUuid(body?.order_id) ? body.order_id : null;
 }
 
 export async function createCheckoutSessionHandler(req: Request, res: Response) {

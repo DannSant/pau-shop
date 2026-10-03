@@ -58,6 +58,10 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 
 # ⏳ Pending
 
+- Upgrade Node to 20.19+ or 22 (Vite and the newest test tools ask for it; everything works on 20.16 for now).
+- The GitHub Actions test workflow hasn't run yet; check it on the first push.
+- Hardening: `products` and `product_images` don't have row level security enabled (public data and writes are already blocked, so nothing is exposed).
+
 - 3 test orders from August (2026-08-16, 2026-08-18 ×2) are paid in Stripe but only for the product price ($25 of $431.13, the old undercharging bug), so the backend leaves them as "Pago pendiente" and logs a warning. Decide: refund/delete them (test data) or mark them paid by hand.
 
 1. Before going live: publish the Google OAuth consent screen and add the production domain (Google Cloud authorized domains + client origins, Supabase redirect URLs). Rename the app in the Google consent screen and the Resend sender name to Polillita Shop if they still say PauShop.
@@ -129,6 +133,19 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 - Success page: "Confirmando tu pago..." while waiting (also asks Stripe directly); explains cancelled orders; empties the cart only once the order is paid.
 - Database: `20261003000000_payment_failures.sql`.
 - **Stripe setup:** the webhook must send `checkout.session.completed`, `checkout.session.expired`, `checkout.session.async_payment_succeeded` and `checkout.session.async_payment_failed`.
+
+---
+
+## 9. Automated tests + rebuildable database ✅ done
+- **Database in the repo:** `supabase/migrations/20261004000000_baseline.sql` is the full schema (exported from the live project with `supabase/export-schema.sql`, verified identical on a fresh local database); categories in `supabase/seed.sql`. Old migrations moved to `supabase/migrations-archive/`. Go-live checklist in `supabase/README.md`.
+- **Local Supabase** in Docker for tests: `npm run db:start` / `db:reset` / `db:stop`.
+- **Fake Stripe** (`STRIPE_MODE=fake`, tests only; refused in production) plus a stand-in payment page for browser tests.
+- **Suites** (see `TESTING.md`): backend API + database rules (128 tests, Vitest + Supertest), frontend components (38, Vitest + Testing Library + MSW), browser flows (30, Playwright), optional real Stripe test-mode payment. `npm test` runs all; GitHub Actions workflow in `.github/workflows/tests.yml`.
+- Fixed while writing the tests:
+  - addresses: the API accepted any field (a customer could move an address to another account), saved incomplete addresses, and answered 500 instead of 404/409; checkout now shows an error when an address can't be saved
+  - malformed ids gave 500 instead of 404 on every route
+  - totals endpoint answered 404 for a bad amount (now 400)
+  - form labels weren't linked to their inputs (screen readers)
 
 ---
 

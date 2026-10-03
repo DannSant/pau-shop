@@ -64,8 +64,9 @@ export default function SignupPage() {
         <h1 className="text-2xl text-white mb-6">{t.signup.title}</h1>
 
         <div className="mb-4">
-          <label className="block text-white mb-2">{t.signup.name}</label>
+          <label htmlFor="signup-name" className="block text-white mb-2">{t.signup.name}</label>
           <input
+            id="signup-name"
             type="text"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={name}
@@ -75,8 +76,9 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white mb-2">{t.signup.phone}</label>
+          <label htmlFor="signup-phone" className="block text-white mb-2">{t.signup.phone}</label>
           <input
+            id="signup-phone"
             type="tel"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={phone}
@@ -86,8 +88,9 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white mb-2">{t.signup.email}</label>
+          <label htmlFor="signup-email" className="block text-white mb-2">{t.signup.email}</label>
           <input
+            id="signup-email"
             type="email"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={email}
@@ -97,8 +100,9 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white mb-2">{t.signup.password}</label>
+          <label htmlFor="signup-password" className="block text-white mb-2">{t.signup.password}</label>
           <input
+            id="signup-password"
             type="password"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={password}
@@ -108,10 +112,11 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-white mb-2">
+          <label htmlFor="signup-confirm-password" className="block text-white mb-2">
             {t.signup.confirmPassword}
           </label>
           <input
+            id="signup-confirm-password"
             type="password"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={confirmPassword}

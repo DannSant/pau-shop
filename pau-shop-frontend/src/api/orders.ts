@@ -51,7 +51,8 @@ export interface OrderDetail extends Order {
 }
 
 export const calculateTotals = async (amount: number) => {
-  return request<OrderTotals>(
+  // The backend returns the database function's single row in an array.
+  return request<OrderTotals[]>(
     api.get(`/orders/total/calculate?amount=${amount}`)
   );
 };

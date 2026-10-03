@@ -74,6 +74,7 @@ function ProductForm({
   const [error, setError] = useState<string | null>(null);
 
   const field = (key: keyof FormValues) => ({
+    id: `product-${key}`,
     value: values[key],
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setValues({ ...values, [key]: e.target.value }),
@@ -106,42 +107,42 @@ function ProductForm({
     <form onSubmit={handleSubmit} className={`${CARD} space-y-5`}>
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label className={LABEL}>{t.admin.nameEs}</label>
+          <label htmlFor="product-nameEs" className={LABEL}>{t.admin.nameEs}</label>
           <input className={INPUT} required {...field("nameEs")} />
         </div>
         <div>
-          <label className={LABEL}>{t.admin.nameEn}</label>
+          <label htmlFor="product-nameEn" className={LABEL}>{t.admin.nameEn}</label>
           <input className={INPUT} {...field("nameEn")} />
         </div>
         <div>
-          <label className={LABEL}>{t.admin.descriptionEs}</label>
+          <label htmlFor="product-descriptionEs" className={LABEL}>{t.admin.descriptionEs}</label>
           <textarea className={INPUT} rows={4} {...field("descriptionEs")} />
         </div>
         <div>
-          <label className={LABEL}>{t.admin.descriptionEn}</label>
+          <label htmlFor="product-descriptionEn" className={LABEL}>{t.admin.descriptionEn}</label>
           <textarea className={INPUT} rows={4} {...field("descriptionEn")} />
         </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
         <div>
-          <label className={LABEL}>{t.admin.price}</label>
+          <label htmlFor="product-price" className={LABEL}>{t.admin.price}</label>
           <input type="number" min="0.01" step="0.01" className={INPUT} required {...field("price")} />
         </div>
         <div>
-          <label className={LABEL}>{t.admin.offerPrice}</label>
+          <label htmlFor="product-offerPrice" className={LABEL}>{t.admin.offerPrice}</label>
           <input type="number" min="0.01" step="0.01" className={INPUT} {...field("offerPrice")} />
           <p className="text-xs text-white/50 mt-1">{t.admin.offerPriceHint}</p>
         </div>
         <div>
-          <label className={LABEL}>{t.admin.stock}</label>
+          <label htmlFor="product-stock" className={LABEL}>{t.admin.stock}</label>
           <input type="number" min="0" step="1" className={INPUT} required {...field("stock")} />
         </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label className={LABEL}>{t.admin.category}</label>
+          <label htmlFor="product-categoryId" className={LABEL}>{t.admin.category}</label>
           <select className={INPUT} {...field("categoryId")}>
             <option value="">{t.admin.noCategory}</option>
             {categories.map((category) => (
@@ -152,7 +153,7 @@ function ProductForm({
           </select>
         </div>
         <div>
-          <label className={LABEL}>{t.admin.franchise}</label>
+          <label htmlFor="product-franchise" className={LABEL}>{t.admin.franchise}</label>
           <input className={INPUT} list="admin-franchises" {...field("franchise")} />
           <datalist id="admin-franchises">
             {franchises.map((franchise) => (

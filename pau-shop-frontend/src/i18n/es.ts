@@ -97,7 +97,8 @@ export const es = {
     addNew: "Agregar nueva dirección",
     edit: "Editar dirección",
     useThis: "Usar esta dirección",
-    cancel: "Cancelar"
+    cancel: "Cancelar",
+    saveError: "Revisa la dirección: todos los campos son obligatorios excepto el número interior, y el teléfono debe ser válido."
   },
   orderSuccess: {
     title: "¡Gracias por tu compra!",

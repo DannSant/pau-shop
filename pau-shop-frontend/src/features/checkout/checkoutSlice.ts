@@ -27,7 +27,7 @@ const initialState: CheckoutState = {
 };
 
 // Turns the backend's message into something we can explain to the customer.
-function toCheckoutError(message: string): CheckoutError {
+export function toCheckoutError(message: string): CheckoutError {
   if (/insufficient stock/i.test(message)) return "outOfStock";
   if (/product not found/i.test(message)) return "productUnavailable";
   if (/phone/i.test(message)) return "phoneRequired";

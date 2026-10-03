@@ -28,7 +28,7 @@ const isCartItem = (item: unknown): item is CartItem => {
   );
 };
 
-function loadCart(): CartItem[] {
+export function loadCart(): CartItem[] {
   try {
     const saved = JSON.parse(localStorage.getItem(CART_KEY) ?? "[]");
     return Array.isArray(saved) ? saved.filter(isCartItem) : [];

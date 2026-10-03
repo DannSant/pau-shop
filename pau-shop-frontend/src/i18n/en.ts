@@ -100,7 +100,8 @@ export const en: typeof es = {
     addNew: "Add new address",
     edit: "Edit address",
     useThis: "Use this address",
-    cancel: "Cancel"
+    cancel: "Cancel",
+    saveError: "Please check the address: every field except the apartment/unit is required, and the phone must be valid."
   },
   orderSuccess: {
     title: "Thank you for your purchase!",

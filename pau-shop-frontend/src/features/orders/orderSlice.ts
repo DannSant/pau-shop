@@ -37,7 +37,7 @@ export const fetchOrderTotals = createAsyncThunk(
   async (amount: number) => {
     const response = await calculateTotals(amount);
 
-    return (response as any)[0];
+    return response[0];
   }
 );
 

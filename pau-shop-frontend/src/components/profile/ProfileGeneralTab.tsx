@@ -61,9 +61,10 @@ export default function ProfileGeneralTab() {
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <p className="text-sm text-white/60 mb-1">{t.profile.name}</p>
+            <label htmlFor="profile-name" className="block text-sm text-white/60 mb-1">{t.profile.name}</label>
             {editing ? (
               <input
+                id="profile-name"
                 type="text"
                 className="w-full p-2 rounded bg-gray-800 text-white"
                 value={name}
@@ -76,9 +77,10 @@ export default function ProfileGeneralTab() {
           </div>
 
           <div>
-            <p className="text-sm text-white/60 mb-1">{t.profile.phone}</p>
+            <label htmlFor="profile-phone" className="block text-sm text-white/60 mb-1">{t.profile.phone}</label>
             {editing ? (
               <input
+                id="profile-phone"
                 type="tel"
                 className="w-full p-2 rounded bg-gray-800 text-white"
                 value={phone}

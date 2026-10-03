@@ -23,6 +23,7 @@ export default function AddressSection() {
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [confirmed, setConfirmed] = useState(false);
+    const [saveError, setSaveError] = useState(false);
 
     // Load addresses
     useEffect(() => {
@@ -63,10 +64,11 @@ export default function AddressSection() {
     // Confirm selected/edited address
     const handleConfirm = async () => {
         if (!editingAddress) {
-            console.error("No address to save");
+            setSaveError(true);
             return;
         }
 
+        setSaveError(false);
         try {
             const saved = editingAddress.id
                 ? await dispatch(updateAddress(editingAddress)).unwrap()
@@ -79,6 +81,7 @@ export default function AddressSection() {
             dispatch(setSelectedAddress(saved));
         } catch (err) {
             console.error("Failed to save address", err);
+            setSaveError(true);
         }
     };
 
@@ -108,6 +111,7 @@ export default function AddressSection() {
 
     const handleCancel = () => {
         setShowForm(false);
+        setSaveError(false);
         setEditingAddress(null);
         if (addresses.length > 0) {
             const oldest = addresses[0];
@@ -209,6 +213,12 @@ export default function AddressSection() {
                         initialAddress={editingAddress ?? undefined}
                         onChange={(addr) => setEditingAddress(addr)}
                     />
+
+                    {saveError && (
+                        <p role="alert" className="mt-4 text-red-300 text-sm">
+                            {t.address.saveError}
+                        </p>
+                    )}
 
                     <button
                         onClick={handleConfirm}

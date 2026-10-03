@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
@@ -32,11 +32,13 @@ function CategoryFields({
   values: FormValues;
   onChange: (values: FormValues) => void;
 }) {
+  const id = useId();
   return (
     <>
       <div className="flex-1 min-w-40">
-        <label className={LABEL}>{t.admin.categoryNameEs}</label>
+        <label htmlFor={`${id}-es`} className={LABEL}>{t.admin.categoryNameEs}</label>
         <input
+          id={`${id}-es`}
           className={INPUT}
           value={values.nameEs}
           onChange={(e) => onChange({ ...values, nameEs: e.target.value })}
@@ -44,16 +46,18 @@ function CategoryFields({
         />
       </div>
       <div className="flex-1 min-w-40">
-        <label className={LABEL}>{t.admin.categoryNameEn}</label>
+        <label htmlFor={`${id}-en`} className={LABEL}>{t.admin.categoryNameEn}</label>
         <input
+          id={`${id}-en`}
           className={INPUT}
           value={values.nameEn}
           onChange={(e) => onChange({ ...values, nameEn: e.target.value })}
         />
       </div>
       <div className="w-24">
-        <label className={LABEL}>{t.admin.sortOrder}</label>
+        <label htmlFor={`${id}-order`} className={LABEL}>{t.admin.sortOrder}</label>
         <input
+          id={`${id}-order`}
           type="number"
           step={1}
           className={INPUT}

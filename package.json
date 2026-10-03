@@ -3,13 +3,24 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix pau-shop-backend\" \"npm run dev --prefix pau-shop-frontend\""
+    "dev": "concurrently \"npm run dev --prefix pau-shop-backend\" \"npm run dev --prefix pau-shop-frontend\"",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "test:backend": "npm test --prefix pau-shop-backend",
+    "test:frontend": "npm test --prefix pau-shop-frontend",
+    "test:e2e": "playwright test",
+    "test:e2e:stripe": "cross-env LIVE_STRIPE=1 playwright test",
+    "test": "npm run test:backend && npm run test:frontend && npm run test:e2e"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "@playwright/test": "^1.62.1",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "supabase": "^2.119.0"
   }
 }

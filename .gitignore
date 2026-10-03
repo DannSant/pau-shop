@@ -6,3 +6,5 @@ test-cards.txt
 resend.json
 *.log
 google.json
+e2e/results
+e2e/report

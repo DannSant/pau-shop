@@ -1,3 +1,4 @@
+import { requireUuidParam } from "../../utils/ids";
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { requireAdmin } from "../../middlewares/admin.middleware";
@@ -10,6 +11,7 @@ import {
 } from "./product-images.controller";
 
 const router = Router({ mergeParams: true });
+router.param("imageId", requireUuidParam);
 
 router.get("/", listImagesHandler);
 

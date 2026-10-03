@@ -1,3 +1,4 @@
+import { requireUuidParam } from "../../utils/ids";
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { requireAdmin } from "../../middlewares/admin.middleware";
@@ -13,6 +14,8 @@ import {
 
 // Review moderation, admins only.
 const router = Router();
+router.param("reviewId", requireUuidParam);
+router.param("userId", requireUuidParam);
 
 router.use(requireAuth, requireAdmin);
 

@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from '../features/auth/authSlice'
 import cartReducer, { saveCart } from "../features/cart/cartSlice";
 import productsReducer from "../features/products/productsSlice";
@@ -8,18 +8,23 @@ import checkoutReducer from "../features/checkout/checkoutSlice";
 import addressReducer from "../features/address/addressSlice";
 import profileReducer from "../features/profile/profileSlice";
 
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    profile: profileReducer,
-    cart: cartReducer,
-    products: productsReducer,
-    shipping: shippingReducer,
-    order: orderReducer,
-    checkout: checkoutReducer,
-    address: addressReducer,
-  },
+const rootReducer = combineReducers({
+  auth: authReducer,
+  profile: profileReducer,
+  cart: cartReducer,
+  products: productsReducer,
+  shipping: shippingReducer,
+  order: orderReducer,
+  checkout: checkoutReducer,
+  address: addressReducer,
 });
+
+// Tests build their own store (optionally with a starting state).
+export function makeStore(preloadedState?: Partial<ReturnType<typeof rootReducer>>) {
+  return configureStore({ reducer: rootReducer, preloadedState });
+}
+
+export const store = makeStore();
 
 // Save the cart whenever it changes.
 let savedCart = store.getState().cart.items;

@@ -1,3 +1,4 @@
+import { requireUuidParam } from "../../utils/ids";
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import {
@@ -8,6 +9,7 @@ import {
 } from "./addresses.controller";
 
 const router = Router();
+router.param("id", requireUuidParam);
 
 router.use(requireAuth);
 

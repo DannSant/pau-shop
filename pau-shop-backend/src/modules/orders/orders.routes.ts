@@ -1,3 +1,4 @@
+import { requireUuidParam } from "../../utils/ids";
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { requireAdmin } from "../../middlewares/admin.middleware";
@@ -12,6 +13,7 @@ import {
 
 
 const router = Router();
+router.param("id", requireUuidParam);
 
 router.use(requireAuth);
 

@@ -54,8 +54,9 @@ export default function LoginPage() {
         <h1 className="text-2xl text-white mb-6">{t.login.title}</h1>
 
         <div className="mb-4">
-          <label className="block text-white mb-2">{t.login.email}</label>
+          <label htmlFor="login-email" className="block text-white mb-2">{t.login.email}</label>
           <input
+            id="login-email"
             type="email"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={email}
@@ -65,8 +66,9 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-white mb-2">{t.login.password}</label>
+          <label htmlFor="login-password" className="block text-white mb-2">{t.login.password}</label>
           <input
+            id="login-password"
             type="password"
             className="w-full p-2 rounded bg-gray-800 text-white"
             value={password}

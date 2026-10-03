@@ -19,8 +19,8 @@ export async function createAddress(
   const { data, error } = await supabase
     .from("shipping_addresses")
     .insert({
-      user_id: userId,
-      ...input
+      ...input,
+      user_id: userId
     })
     .select()
     .single();
@@ -40,7 +40,7 @@ export async function updateAddress(
     .eq("id", addressId)
     .eq("user_id", userId) // ownership check
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
   return data;
@@ -50,11 +50,13 @@ export async function deleteAddress(
   userId: string | string[],
   addressId: string | string[]
 ) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("shipping_addresses")
     .delete()
     .eq("id", addressId)
-    .eq("user_id", userId); // ownership check
+    .eq("user_id", userId) // ownership check
+    .select("id");
 
   if (error) throw error;
+  return data.length > 0;
 }

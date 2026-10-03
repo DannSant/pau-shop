@@ -1,3 +1,4 @@
+import { requireUuidParam } from "./utils/ids";
 // src/routes.ts
 import { Router } from "express";
 
@@ -11,8 +12,11 @@ import moderationRouter from "./modules/moderation/moderation.routes";
 import productImagesRouter from "./modules/product-images/product-images.routes";
 import paymentsRouter from "./modules/payments/payments.routes";
 import webhooksRouter from "./modules/webhooks/webhooks.routes";
+import testStripeRouter from "./modules/test-stripe/test-stripe.routes";
+import { usingFakeStripe } from "./lib/stripe";
 
 const router = Router();
+router.param("id", requireUuidParam);
 
 router.use("/products", productsRouter);
 router.use("/categories", categoriesRouter);
@@ -25,6 +29,11 @@ router.use("/products/:id/images", productImagesRouter);
 router.use("/payments", paymentsRouter);
 
 router.use("/webhooks", webhooksRouter);
+
+// Fake Stripe payment page, only when tests run with STRIPE_MODE=fake.
+if (usingFakeStripe) {
+  router.use("/__test/stripe", testStripeRouter);
+}
 
 
 export default router;
