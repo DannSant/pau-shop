@@ -8,3 +8,5 @@ resend.json
 google.json
 e2e/results
 e2e/report
+backups/
+supabase.json

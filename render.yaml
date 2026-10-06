@@ -1,0 +1,144 @@
+# Render Blueprint: the four hosted services.
+#   production: polillita-api + polillita-web   (branch main)
+#   test:       polillita-api-test + polillita-web-test   (branch develop)
+# Secret values (sync: false) are entered in the Render dashboard, never here.
+# Each service deploys only after the GitHub Actions tests pass for its commit.
+
+previews:
+  generation: off
+
+services:
+  # ---------------------------------------------------------------- production
+  - type: web
+    name: polillita-api
+    runtime: node
+    plan: starter # always on ($7/mo): webhooks and the payment check never sleep
+    region: ohio
+    branch: main
+    rootDir: pau-shop-backend
+    # --include=dev: TypeScript is a dev dependency, needed to build.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    domains:
+      - api.polillita-shop.com.mx
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://polillita-shop.com.mx
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY # sk_live_...
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET # from the live webhook destination
+        sync: false
+
+  - type: web
+    name: polillita-web
+    runtime: static
+    branch: main
+    rootDir: pau-shop-frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    autoDeployTrigger: checksPass
+    domains:
+      - polillita-shop.com.mx
+      - www.polillita-shop.com.mx
+    routes:
+      # Single-page app: every path is served by index.html.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://api.polillita-shop.com.mx/api
+      - key: VITE_APP_BACKGROUND_IMAGE
+        value: /assets/bg.jpg
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+
+  # ---------------------------------------------------------------------- test
+  - type: web
+    name: polillita-api-test
+    runtime: node
+    plan: free # sleeps after 15 min idle; the first request then takes ~1 min
+    region: ohio
+    branch: develop
+    rootDir: pau-shop-backend
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    domains:
+      - api-test.polillita-shop.com.mx
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://test.polillita-shop.com.mx
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY # sk_test_...
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET # from the test-mode webhook destination
+        sync: false
+
+  - type: web
+    name: polillita-web-test
+    runtime: static
+    branch: develop
+    rootDir: pau-shop-frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    autoDeployTrigger: checksPass
+    domains:
+      - test.polillita-shop.com.mx
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      # Keep the test site out of search results.
+      - path: /*
+        name: X-Robots-Tag
+        value: noindex, nofollow
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://api-test.polillita-shop.com.mx/api
+      - key: VITE_APP_BACKGROUND_IMAGE
+        value: /assets/bg.jpg
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        sync: false

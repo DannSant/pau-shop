@@ -1,0 +1,41 @@
+name: Database migrations
+
+# Applies new files in supabase/migrations to the matching database:
+#   develop -> test         main -> production (waits for your approval)
+# Each GitHub environment ("test", "production") has its own DB_URL secret:
+# the Supabase *session pooler* connection string (Project Settings ->
+# Database -> Connection string -> Session pooler), which works from GitHub.
+# Render waits for this check before deploying the commit, so the database is
+# ready before the new backend goes live.
+
+on:
+  push:
+    branches: [develop, main]
+    paths: ["supabase/migrations/**"]
+  workflow_dispatch:
+
+concurrency:
+  group: migrate-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.ref_name == 'develop' || github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'test' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Pending migrations
+        run: supabase migration list --db-url "$DB_URL"
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+
+      - name: Apply
+        run: supabase db push --db-url "$DB_URL"
+        env:
+          DB_URL: ${{ secrets.DB_URL }}

@@ -1,0 +1,112 @@
+name: Database sync and backup
+
+# Manual: Actions -> "Database sync and backup" -> Run workflow.
+#   catalog       test -> prod: categories, products, images (never customers or orders)
+#   prod-to-test  prod -> test: everything, customers anonymized
+#   backup        a data dump of production
+# Without "apply" it only shows what would change.
+# Nightly: backup of production (kept 30 days).
+#
+# Secrets live in the GitHub environment "sync":
+#   TEST_DB_URL, TEST_SUPABASE_URL, TEST_SECRET_KEY
+#   PROD_DB_URL, PROD_SUPABASE_URL, PROD_SECRET_KEY
+#   TEST_KEEP_EMAILS (optional: test accounts to keep on prod-to-test)
+# The DB URLs are the Supabase *session pooler* connection strings.
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: What to do
+        type: choice
+        options: [catalog, prod-to-test, backup]
+        required: true
+      apply:
+        description: Write the changes (unchecked = only show them)
+        type: boolean
+        default: false
+      with_stock:
+        description: "catalog only: also copy stock from test"
+        type: boolean
+        default: false
+      confirm:
+        description: 'To apply: type "prod" for catalog, "test" for prod-to-test'
+        type: string
+        required: false
+  schedule:
+    - cron: "0 9 * * *" # every day, 3:00 a.m. Mexico City
+
+concurrency:
+  group: db-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.event_name == 'workflow_dispatch' && inputs.command != 'backup'
+    runs-on: ubuntu-latest
+    environment: sync
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check confirmation
+        if: inputs.apply
+        run: |
+          expected=${{ inputs.command == 'catalog' && 'prod' || 'test' }}
+          if [ "${{ inputs.confirm }}" != "$expected" ]; then
+            echo "To apply, type \"$expected\" in the confirm box."; exit 1
+          fi
+
+      - name: Run
+        run: |
+          args="${{ inputs.command }}"
+          if [ "${{ inputs.apply }}" = "true" ]; then args="$args --apply --yes"; fi
+          if [ "${{ inputs.with_stock }}" = "true" ]; then args="$args --with-stock"; fi
+          node scripts/db-sync.mjs $args
+        env:
+          TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
+          TEST_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+          TEST_SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+          PROD_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          PROD_SECRET_KEY: ${{ secrets.PROD_SECRET_KEY }}
+          TEST_KEEP_EMAILS: ${{ secrets.TEST_KEEP_EMAILS }}
+
+      # The catalog command saves production's catalog before changing it.
+      - name: Keep the catalog backup
+        if: always() && inputs.apply
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-backup-${{ github.run_id }}
+          path: backups/
+          if-no-files-found: ignore
+          retention-days: 90
+
+  backup:
+    if: github.event_name == 'schedule' || inputs.command == 'backup'
+    runs-on: ubuntu-latest
+    environment: sync
+    steps:
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dump production data
+        run: |
+          supabase db dump --db-url "$PROD_DB_URL" --data-only --schema public -f public-data.sql
+          supabase db dump --db-url "$PROD_DB_URL" --data-only --schema auth -f auth-data.sql
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+
+      # Contains customer data: the repository must stay private.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prod-backup-${{ github.run_id }}
+          path: "*-data.sql"
+          retention-days: 30

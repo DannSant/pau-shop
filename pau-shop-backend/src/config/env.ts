@@ -1,13 +1,18 @@
 import dotenv from "dotenv";
 
 // Tests and the end-to-end servers use ENV_FILE=.env.test (local Supabase,
-// fake Stripe); everything else reads .env.
+// fake Stripe); local development reads .env. On Render the variables come
+// from the dashboard and there is no file.
 dotenv.config({ path: process.env.ENV_FILE ?? ".env", quiet: true });
 
-if (!process.env.SUPABASE_URL) {
-  throw new Error("❌ SUPABASE_URL is not defined");
+const required = ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY"];
+
+// A deployed server must also be able to take payments and know its site.
+if (process.env.NODE_ENV === "production") {
+  required.push("STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "FRONTEND_URL");
 }
 
-if (!process.env.SUPABASE_SECRET_KEY) {
-  throw new Error("❌ SUPABASE_SECRET_KEY is not defined");
+const missing = required.filter((name) => !process.env[name]);
+if (missing.length) {
+  throw new Error(`❌ Missing environment variables: ${missing.join(", ")}`);
 }

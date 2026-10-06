@@ -11,7 +11,9 @@
     "test:frontend": "npm test --prefix pau-shop-frontend",
     "test:e2e": "playwright test",
     "test:e2e:stripe": "cross-env LIVE_STRIPE=1 playwright test",
-    "test": "npm run test:backend && npm run test:frontend && npm run test:e2e"
+    "test": "npm run test:backend && npm run test:frontend && npm run test:e2e",
+    "sync:catalog": "node scripts/db-sync.mjs catalog",
+    "sync:prod-to-test": "node scripts/db-sync.mjs prod-to-test"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +21,10 @@
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "@supabase/supabase-js": "^2.95.3",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
+    "pg": "^8.23.1",
     "supabase": "^2.119.0"
   }
 }

@@ -13,8 +13,8 @@
 ## Changing the schema
 
 1. Add a new file in `migrations/` named `YYYYMMDDHHMMSS_what_it_does.sql`.
-2. Run it in the live project's **SQL Editor**.
-3. Run `npm run db:reset` so the local test database gets it too, then run the tests.
+2. Run `npm run db:reset` so the local database gets it, then run the tests.
+3. Merge it: the "Database migrations" workflow applies it to test (`develop`) and, after your approval, to production (`main`).
 
 ## Local database (for tests)
 
@@ -32,21 +32,6 @@ Local Studio (a dashboard for the local database): http://127.0.0.1:54323
 
 Run `export-schema.sql` against the database, save the result, and compare it with `schema-export.csv`. Each row is one object, so differences show exactly what changed.
 
-## Go-live checklist (new, empty project)
+## Environments and go-live
 
-1. **Create** the Supabase project. Use the same region you'll deploy the backend to.
-2. **Schema:** in the SQL Editor, run `migrations/20261004000000_baseline.sql`, then any later migration files in order, then `seed.sql`.
-3. **Admin:** sign up in the app, then run the following in the SQL Editor:
-   `update user_data set role = 'admin' where email = '<your email>';`
-4. **Auth settings:**
-   - URL Configuration: set the Site URL to the store's domain, and add Redirect URLs `https://<domain>/**`.
-   - Email: confirmation **on**. SMTP: Resend, sending from the verified domain.
-   - Google provider: the client ID and secret. In Google Cloud, add the domain to the authorized domains and JavaScript origins, and publish the consent screen.
-5. **Stripe (live mode):**
-   - Add a webhook destination `https://<backend-domain>/api/webhooks/stripe` with these events: `checkout.session.completed`, `checkout.session.expired`, `checkout.session.async_payment_succeeded` and `checkout.session.async_payment_failed`.
-   - Put its signing secret in the backend's `STRIPE_WEBHOOK_SECRET`.
-6. **Environment variables:**
-   - Backend: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY` (`sk_live_…`), `STRIPE_WEBHOOK_SECRET`, `FRONTEND_URL`, `NODE_ENV=production`.
-   - Frontend: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_API_BASE_URL`.
-   - Never set `STRIPE_MODE` in production; the backend refuses to start with `STRIPE_MODE=fake` when `NODE_ENV=production`.
-7. **Check:** run `export-schema.sql` on the new project and compare it with `schema-export.csv`. Then place a real order with a small amount and refund it.
+Test and production each have their own Supabase project. Setup, migrations per environment, syncing data between them and backups are described in [DEPLOYMENT.md](../DEPLOYMENT.md).

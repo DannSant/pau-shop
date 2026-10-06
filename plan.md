@@ -58,8 +58,9 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
 
 # ⏳ Pending
 
+- **Deployment:** follow DEPLOYMENT.md (production Supabase project, GitHub environments + `develop` branch, Render Blueprint, DNS, Stripe live activation, Google publishing, Resend domain).
+
 - Upgrade Node to 20.19+ or 22 (Vite and the newest test tools ask for it; everything works on 20.16 for now).
-- The GitHub Actions test workflow hasn't run yet; check it on the first push.
 - Hardening: `products` and `product_images` don't have row level security enabled (public data and writes are already blocked, so nothing is exposed).
 
 - 3 test orders from August (2026-08-16, 2026-08-18 ×2) are paid in Stripe but only for the product price ($25 of $431.13, the old undercharging bug), so the backend leaves them as "Pago pendiente" and logs a warning. Decide: refund/delete them (test data) or mark them paid by hand.
@@ -146,6 +147,17 @@ Online store (shown to customers as **Polillita Shop**; the repo and folders kee
   - malformed ids gave 500 instead of 404 on every route
   - totals endpoint answered 404 for a bad amount (now 400)
   - form labels weren't linked to their inputs (screen readers)
+
+---
+
+## 10. Deployment setup ✅ code done (accounts and DNS pending, see DEPLOYMENT.md)
+- **Hosting: Render** (`render.yaml`): `polillita-web` + `polillita-api` (production, branch `main`, API on Starter $7/mo) and `polillita-web-test` + `polillita-api-test` (test, branch `develop`, free). Each deploys after the GitHub tests pass. Free automatic HTTPS for all custom domains.
+- **Environments:** test = the original Supabase project; production = a new project `polillita-prod` created from `supabase/migrations`. Stripe test vs live keys.
+- **Migrations per environment:** `.github/workflows/migrate.yml` runs `supabase db push`: `develop` → test, `main` → production after approval.
+- **Sync** (`scripts/db-sync.mjs`, run from Actions → "Database sync and backup" or `npm run sync:*`): `catalog` test → prod (categories, products, images; never customers, orders or stock unless asked; dry run first; backup first) and `prod-to-test` (everything, customers anonymized). Checked against two local Supabase stacks (30 checks).
+- **Nightly production backup** as a GitHub Actions artifact (30 days); the repo must stay private.
+- Backend ready for hosting: `build`/`start` scripts, Node 22, CORS limited to the store's domain (it allowed any site), `/api/health`, refuses to start in production without its keys.
+- Fixed: the background image used a relative path that would break on pages like `/orders/123`.
 
 ---
 
