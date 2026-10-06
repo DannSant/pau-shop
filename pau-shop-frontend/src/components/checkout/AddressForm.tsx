@@ -100,7 +100,9 @@ export default function AddressForm({ initialAddress, onChange }: Props) {
     }, []);
 
     return (
-        <div className="bg-black/60 p-6 rounded-xl">
+        // color-scheme: the browser draws its own popups (state list, colonia
+        // suggestions) light by default, which made the white text unreadable.
+        <div className="bg-black/60 p-6 rounded-xl scheme-dark [&_option]:bg-gray-800 [&_option]:text-white">
             <h2 className="text-xl text-white mb-4">{t.address.title}</h2>
 
             <div className="grid grid-cols-1 gap-4">
