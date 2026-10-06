@@ -17,6 +17,9 @@ test.describe("browsing the store", () => {
     await expect(page.getByText(`Póster Película ${tag}`)).toBeVisible();
     await expect(page.getByText(`Taza ${tag}`)).toHaveCount(0);
     await page.getByRole("button", { name: "Todas" }).first().click();
+    // Wait for the filter to clear before searching: the search box builds its
+    // URL from the last render, so typing too soon would bring the category back.
+    await expect(page.getByText(`Taza ${tag}`)).toBeVisible();
 
     const search = page.getByPlaceholder("Buscar por nombre o descripción");
     await search.fill(`pelicula ${tag}`);
