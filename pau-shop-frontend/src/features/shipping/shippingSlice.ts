@@ -9,6 +9,7 @@ export interface ShippingAddress {
   street: string;
   exterior_number: string;
   interior_number?: string | null;
+  special_instructions?: string | null;
   neighborhood: string;
   city: string;
   state: string;

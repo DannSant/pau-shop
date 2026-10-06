@@ -89,6 +89,9 @@ function OrderCard({
                 <p>
                   {address.neighborhood}, {address.city}, {address.state} {address.postal_code}
                 </p>
+                {address.special_instructions && (
+                  <p className="mt-1 text-white/80 whitespace-pre-line">{address.special_instructions}</p>
+                )}
               </>
             ) : (
               <p>—</p>

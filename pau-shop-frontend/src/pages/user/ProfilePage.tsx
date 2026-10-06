@@ -4,15 +4,19 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { fetchProfile } from "../../features/profile/profileSlice";
 import ProfileGeneralTab from "../../components/profile/ProfileGeneralTab";
 import OrderHistoryTab from "../../components/profile/OrderHistoryTab";
+import AddressesTab from "../../components/profile/AddressesTab";
 import { t } from "../../i18n";
 
-type Tab = "general" | "orders";
+type Tab = "general" | "addresses" | "orders";
+
+const TABS_IN_URL: Tab[] = ["addresses", "orders"];
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
   // The tab lives in the URL so "back" from an order returns to the orders tab.
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab: Tab = searchParams.get("tab") === "orders" ? "orders" : "general";
+  const tabParam = searchParams.get("tab") as Tab | null;
+  const activeTab: Tab = tabParam && TABS_IN_URL.includes(tabParam) ? tabParam : "general";
 
   useEffect(() => {
     dispatch(fetchProfile());
@@ -20,6 +24,7 @@ export default function ProfilePage() {
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "general", label: t.profile.tabGeneral },
+    { id: "addresses", label: t.profile.tabAddresses },
     { id: "orders", label: t.profile.tabOrders },
   ];
 
@@ -33,7 +38,7 @@ export default function ProfilePage() {
             key={tab.id}
             type="button"
             onClick={() =>
-              setSearchParams(tab.id === "orders" ? { tab: "orders" } : {})
+              setSearchParams(TABS_IN_URL.includes(tab.id) ? { tab: tab.id } : {})
             }
             className={`px-4 py-2 -mb-px border-b-2 transition cursor-pointer ${
               activeTab === tab.id
@@ -46,7 +51,9 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {activeTab === "general" ? <ProfileGeneralTab /> : <OrderHistoryTab />}
+      {activeTab === "general" && <ProfileGeneralTab />}
+      {activeTab === "addresses" && <AddressesTab />}
+      {activeTab === "orders" && <OrderHistoryTab />}
     </div>
   );
 }

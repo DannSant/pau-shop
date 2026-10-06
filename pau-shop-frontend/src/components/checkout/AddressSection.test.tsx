@@ -23,7 +23,7 @@ describe("AddressSection", () => {
   it("confirms an existing address", async () => {
     server.use(
       http.get(`${API}/addresses`, () =>
-        ok([{ id: "a1", first_name: "Ana", last_name: "López", phone: "5551234567", street: "Reforma", exterior_number: "10", neighborhood: "Juárez", city: "CDMX", state: "CDMX", postal_code: "06600" }])
+        ok([{ id: "a1", first_name: "Ana", last_name: "López", phone: "5551234567", street: "Reforma", exterior_number: "10", neighborhood: "Juárez", city: "CDMX", state: "Ciudad de México", postal_code: "06600" }])
       )
     );
     const { user, store } = renderPage(<AddressSection />, { state: signedIn() as never });

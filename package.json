@@ -13,7 +13,8 @@
     "test:e2e:stripe": "cross-env LIVE_STRIPE=1 playwright test",
     "test": "npm run test:backend && npm run test:frontend && npm run test:e2e",
     "sync:catalog": "node scripts/db-sync.mjs catalog",
-    "sync:prod-to-test": "node scripts/db-sync.mjs prod-to-test"
+    "sync:prod-to-test": "node scripts/db-sync.mjs prod-to-test",
+    "import:postal-codes": "node scripts/import-sepomex.mjs"
   },
   "keywords": [],
   "author": "",

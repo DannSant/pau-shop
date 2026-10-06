@@ -242,6 +242,7 @@ async function prodToTest() {
       street: "Calle de Prueba",
       exterior_number: String(i + 1),
       interior_number: null,
+      special_instructions: null,
       neighborhood: "Centro",
       postal_code: "00000"
     }));

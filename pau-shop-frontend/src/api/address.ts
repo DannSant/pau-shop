@@ -13,3 +13,6 @@ export const createAddressApi = async (address: Omit<Address, "id" | "user_id" |
 export const updateAddressApi = async (address: Address) => {
   return request<Address>(api.put(`/addresses/${address.id}`, address));
 }
+export const deleteAddressApi = async (id: string) => {
+  return request<object>(api.delete(`/addresses/${id}`));
+}

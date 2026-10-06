@@ -7,6 +7,8 @@ import {
 } from "./addresses.service";
 import { failure, success } from "../../utils/response";
 import { CreateAddressDTO } from "./addresses.types";
+import { MEXICAN_STATES, POSTAL_CODE_PATTERN } from "./mexico";
+import { findPostalCode } from "../postal-codes/postal-codes.service";
 
 const REQUIRED_FIELDS = [
   "first_name",
@@ -21,6 +23,12 @@ const REQUIRED_FIELDS = [
 ] as const;
 
 const MAX_LENGTH = 200;
+
+// Optional fields: blank or null clears them.
+const OPTIONAL_FIELDS = {
+  interior_number: MAX_LENGTH,
+  special_instructions: 500
+} as const;
 const PHONE_PATTERN = /^[0-9+\-() ]{7,20}$/;
 
 // Copies only the address fields from the body (never user_id or id).
@@ -41,14 +49,38 @@ function parseAddressInput(body: any, isCreate: boolean): { data: Partial<Create
     return { error: "Invalid phone number" };
   }
 
-  if (body?.interior_number !== undefined) {
-    const interior = body.interior_number;
-    if (interior !== null && typeof interior !== "string") return { error: "interior_number must be text" };
-    data.interior_number = interior?.trim() || undefined;
-    if ((data.interior_number?.length ?? 0) > MAX_LENGTH) return { error: "interior_number is too long" };
+  if (data.state !== undefined && !MEXICAN_STATES.includes(data.state)) {
+    return { error: "state must be a Mexican state" };
+  }
+
+  if (data.postal_code !== undefined && !POSTAL_CODE_PATTERN.test(data.postal_code)) {
+    return { error: "postal_code must be 5 digits" };
+  }
+
+  for (const [field, maxLength] of Object.entries(OPTIONAL_FIELDS) as [keyof typeof OPTIONAL_FIELDS, number][]) {
+    const value = body?.[field];
+    if (value === undefined) continue;
+    if (value !== null && typeof value !== "string") return { error: `${field} must be text` };
+    data[field] = value?.trim() || null;
+    if ((data[field]?.length ?? 0) > maxLength) return { error: `${field} is too long` };
   }
 
   return { data };
+}
+
+// The postal code must exist in the SEPOMEX catalog and belong to the state.
+// City and colonia aren't checked: the catalog's are often wrong or outdated,
+// so customers may fix them.
+async function checkPostalCode(data: Partial<CreateAddressDTO>): Promise<string | null> {
+  if (data.postal_code === undefined && data.state === undefined) return null;
+  if (data.postal_code === undefined || data.state === undefined) {
+    return "postal_code and state must be sent together";
+  }
+
+  const place = await findPostalCode(data.postal_code);
+  if (!place) return "Unknown postal code";
+  if (place.state !== data.state) return "state doesn't match the postal code";
+  return null;
 }
 
 export async function listMyAddresses(req: Request, res: Response) {
@@ -66,6 +98,9 @@ export async function createAddressHandler(req: Request, res: Response) {
   if ("error" in parsed) return failure(res, parsed.error, 400);
 
   try {
+    const postalCodeError = await checkPostalCode(parsed.data);
+    if (postalCodeError) return failure(res, postalCodeError, 400);
+
     const user = (req as any).user;
     const address = await createAddress(user.id, parsed.data as CreateAddressDTO);
     return success(res, address, 201);
@@ -79,6 +114,9 @@ export async function updateAddressHandler(req: Request, res: Response) {
   if ("error" in parsed) return failure(res, parsed.error, 400);
 
   try {
+    const postalCodeError = await checkPostalCode(parsed.data);
+    if (postalCodeError) return failure(res, postalCodeError, 400);
+
     const user = (req as any).user;
     const address = await updateAddress(user.id, req.params.id, parsed.data);
     if (!address) return failure(res, "Address not found", 404);

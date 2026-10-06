@@ -107,7 +107,7 @@ export async function createAddress(userId: string, overrides: Record<string, un
         exterior_number: "123",
         neighborhood: "Centro",
         city: "CDMX",
-        state: "CDMX",
+        state: "Ciudad de México",
         postal_code: "01000",
         ...overrides
       })

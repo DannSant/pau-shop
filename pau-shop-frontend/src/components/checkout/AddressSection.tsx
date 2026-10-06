@@ -141,6 +141,12 @@ export default function AddressSection() {
 
                     <p>{selectedAddress.postal_code}</p>
 
+                    {selectedAddress.special_instructions && (
+                        <p className="mt-2 text-sm opacity-80 whitespace-pre-line">
+                            {selectedAddress.special_instructions}
+                        </p>
+                    )}
+
                     <button
                         onClick={handleShowAddressList}
                         className="border border-white/20 px-4 py-2 rounded-lg cursor-pointer"

@@ -21,8 +21,9 @@ const newAddress = (overrides: object = {}) => ({
   interior_number: "4B",
   neighborhood: "Juárez",
   city: "CDMX",
-  state: "CDMX",
+  state: "Ciudad de México",
   postal_code: "06600",
+  special_instructions: "Portón verde, tocar dos veces",
   ...overrides
 });
 
@@ -36,14 +37,22 @@ describe("addresses", () => {
     const res = await api.post("/addresses", newAddress({ user_id: beto.id, id: "x" }), ana.token);
 
     expect(res.status).toBe(201);
-    expect(res.body.data).toMatchObject({ user_id: ana.id, street: "Av. Reforma", interior_number: "4B" });
+    expect(res.body.data).toMatchObject({
+      user_id: ana.id, street: "Av. Reforma", interior_number: "4B", special_instructions: "Portón verde, tocar dos veces"
+    });
   });
 
   it.each([
     ["a missing street", { street: undefined }, "street is required"],
     ["a blank city", { city: "   " }, "city is required"],
     ["an invalid phone", { phone: "abc" }, "Invalid phone number"],
-    ["a field that is too long", { neighborhood: "x".repeat(201) }, "neighborhood is too long"]
+    ["a field that is too long", { neighborhood: "x".repeat(201) }, "neighborhood is too long"],
+    ["a state outside Mexico", { state: "Texas" }, "state must be a Mexican state"],
+    ["a postal code that isn't 5 digits", { postal_code: "6600" }, "postal_code must be 5 digits"],
+    ["special instructions that are too long", { special_instructions: "x".repeat(501) }, "special_instructions is too long"],
+    ["a non-numeric postal code", { postal_code: "SW1A1" }, "postal_code must be 5 digits"],
+    ["a postal code that doesn't exist", { postal_code: "99999" }, "Unknown postal code"],
+    ["a postal code from another state", { postal_code: "44100" }, "state doesn't match the postal code"]
   ])("rejects %s (400)", async (_label, overrides, message) => {
     const res = await api.post("/addresses", newAddress(overrides), ana.token);
     expect(res.status).toBe(400);
@@ -65,6 +74,22 @@ describe("addresses", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({ city: "Puebla", user_id: ana.id, street: address.street });
+  });
+
+  it("clears the optional fields when they're sent blank", async () => {
+    const address = await createAddress(ana.id, { interior_number: "4B", special_instructions: "Portón verde" });
+    const res = await api.put(`/addresses/${address.id}`, { interior_number: "", special_instructions: "  " }, ana.token);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ interior_number: null, special_instructions: null });
+  });
+
+  it("won't change the postal code without the state (400)", async () => {
+    const address = await createAddress(ana.id);
+    const res = await api.put(`/addresses/${address.id}`, { postal_code: "06600" }, ana.token);
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("postal_code and state must be sent together");
   });
 
   it("returns 404 when updating or deleting someone else's address", async () => {

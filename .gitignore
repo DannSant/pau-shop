@@ -10,3 +10,6 @@ e2e/results
 e2e/report
 backups/
 supabase.json
+
+# SEPOMEX catalog and other local data files (not ours to redistribute)
+data/

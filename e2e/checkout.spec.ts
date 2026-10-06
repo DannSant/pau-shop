@@ -23,10 +23,12 @@ test.describe("addresses at checkout", () => {
     await page.getByPlaceholder("Apellido").fill("Marín");
     await page.getByPlaceholder("Calle").fill("Insurgentes Sur");
     await page.getByPlaceholder("Número exterior").fill("1500");
-    await page.getByPlaceholder("Ciudad").fill("CDMX");
-    await page.getByPlaceholder("Estado").fill("CDMX");
-    await page.getByPlaceholder("Colonia").fill("Del Valle");
+    // The postal code fills state and city (sample codes in seed.sql); 03100
+    // has two colonias, so the customer picks one.
     await page.getByPlaceholder("Código postal").fill("03100");
+    await expect(page.getByLabel("Estado")).toHaveValue("Ciudad de México");
+    await expect(page.getByPlaceholder("Ciudad")).toHaveValue("Ciudad de México");
+    await page.getByPlaceholder("Colonia").fill("Del Valle Centro");
     await page.getByPlaceholder("Teléfono").fill("5512345678");
     await page.getByRole("button", { name: "Usar esta dirección" }).click();
     await expect(page.getByText("Insurgentes Sur 1500")).toBeVisible();

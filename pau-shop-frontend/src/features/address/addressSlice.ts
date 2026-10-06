@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import type { Address } from "../../types/address";
-import { createAddressApi, getAddressesApi, updateAddressApi } from "../../api/address";
+import axios from "axios";
+import { createAddressApi, deleteAddressApi, getAddressesApi, updateAddressApi } from "../../api/address";
 
 interface AddressState {
   addresses: Address[];
@@ -42,6 +43,20 @@ export const updateAddress = createAsyncThunk(
   async (address: Address) => {
     const response = await updateAddressApi(address);
     return response as Address;
+  }
+);
+
+// DELETE /api/addresses/:id
+// An address an order was shipped to can't be deleted (409): "in_use".
+export const deleteAddress = createAsyncThunk<string, string, { rejectValue: "in_use" | "failed" }>(
+  "address/deleteAddress",
+  async (id, { rejectWithValue }) => {
+    try {
+      await deleteAddressApi(id);
+      return id;
+    } catch (err) {
+      return rejectWithValue(axios.isAxiosError(err) && err.response?.status === 409 ? "in_use" : "failed");
+    }
   }
 );
 
@@ -115,6 +130,11 @@ const addressSlice = createSlice({
       .addCase(updateAddress.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to update address";
+      })
+
+      // DELETE
+      .addCase(deleteAddress.fulfilled, (state, action: PayloadAction<string>) => {
+        state.addresses = state.addresses.filter((a) => a.id !== action.payload);
       });
   },
 });
