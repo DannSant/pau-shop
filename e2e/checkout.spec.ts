@@ -21,7 +21,7 @@ test.describe("addresses at checkout", () => {
     await page.getByRole("button", { name: "Agregar nueva dirección" }).click();
     await page.getByPlaceholder("Nombre", { exact: true }).fill("Lucía");
     await page.getByPlaceholder("Apellido").fill("Marín");
-    await page.getByPlaceholder("Calle").fill("Insurgentes Sur");
+    await page.getByPlaceholder("Calle", { exact: true }).fill("Insurgentes Sur");
     await page.getByPlaceholder("Número exterior").fill("1500");
     // The postal code fills state and city (sample codes in seed.sql); 03100
     // has two colonias, so the customer picks one.
@@ -35,7 +35,7 @@ test.describe("addresses at checkout", () => {
 
     await page.getByRole("button", { name: "Usar otra dirección" }).click();
     await page.getByRole("button", { name: "Editar dirección" }).click();
-    await page.getByPlaceholder("Calle").fill("Reforma");
+    await page.getByPlaceholder("Calle", { exact: true }).fill("Reforma");
     await page.getByRole("button", { name: "Usar esta dirección" }).click();
     await expect(page.getByText("Reforma 1500")).toBeVisible();
 
@@ -50,7 +50,7 @@ test.describe("addresses at checkout", () => {
     await page.goto("/checkout");
 
     await page.getByRole("button", { name: "Agregar nueva dirección" }).click();
-    await page.getByPlaceholder("Calle").fill("Solo calle");
+    await page.getByPlaceholder("Calle", { exact: true }).fill("Solo calle");
     await page.getByRole("button", { name: "Usar esta dirección" }).click();
 
     await expect(page.getByRole("alert")).toContainText("todos los campos son obligatorios");
